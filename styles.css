@@ -348,7 +348,7 @@ blockquote.pull-quote {
 }
 
 blockquote.pull-quote.closing {
-    font-size: clamp(1.3rem, 3vw, 2rem);
+    font-size: clamp(0.9rem, 1.4vw, 1.1rem);
     color: var(--text);
     border-left-color: rgba(232, 228, 220, 0.3);
     max-width: 55ch;
