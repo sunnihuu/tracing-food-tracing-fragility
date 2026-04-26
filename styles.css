@@ -6,7 +6,7 @@
     --deep:   #0d1420;
     --mesh:   #c8cdd6;
     --warm:   #d4a574;
-    --pink:   #e879a0;
+    --pink:   #e8732a;
     --text:   #e8e4dc;
     --muted:  rgba(232, 228, 220, 0.5);
     --dim:    rgba(232, 228, 220, 0.18);
@@ -137,64 +137,23 @@ section h2 {
 }
 
 /* ================================================================
-   NAVIGATION — hidden until past opening
+   READING PROGRESS LINE
 ================================================================ */
-nav {
+.progress-track {
     position: fixed;
     top: 0;
     left: 0;
+    width: 2px;
+    height: 100vh;
+    background: rgba(200, 205, 214, 0.08);
+    z-index: 200;
+}
+
+.progress-fill {
     width: 100%;
-    padding: 1.1rem 5%;
-    z-index: 100;
-    background: rgba(8, 12, 20, 0.88);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(200, 205, 214, 0.07);
-    opacity: 0;
-    transform: translateY(-100%);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    pointer-events: none;
-}
-
-nav.visible {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-}
-
-.nav-inner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: var(--wide);
-    margin: 0 auto;
-}
-
-.nav-logo {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-}
-
-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 2rem;
-}
-
-nav ul a {
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-    transition: color 0.25s;
-}
-
-nav ul a:hover,
-nav ul a.active {
-    color: var(--text);
-    opacity: 1;
+    height: 0%;
+    background: var(--pink);
+    transition: height 0.08s linear;
 }
 
 /* ================================================================
@@ -636,6 +595,45 @@ details.data-panel summary:hover { color: var(--text); }
     color: var(--muted);
     border-bottom: 1px solid rgba(232,228,220,0.18);
     padding-bottom: 2px;
+}
+
+/* ================================================================
+   CHAPTER INDEX
+================================================================ */
+.chapter-index {
+    padding: 5rem 5% 4rem;
+    border-top: 1px solid rgba(200, 205, 214, 0.07);
+    max-width: var(--wide);
+    margin: 0 auto;
+}
+
+.chapter-index-title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+    max-width: none;
+}
+
+.chapter-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.chapter-list a {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: rgba(232, 228, 220, 0.3);
+    transition: color 0.25s;
+}
+
+.chapter-list a:hover {
+    color: var(--text);
+    opacity: 1;
 }
 
 /* ================================================================

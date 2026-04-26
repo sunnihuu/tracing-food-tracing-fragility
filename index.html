@@ -35,21 +35,10 @@
 
     </section>
 
-    <!--==============================================================
-    NAVIGATION — hidden until past opening
-    ===============================================================-->
-    <nav id="main-nav" aria-label="Essay navigation">
-        <div class="nav-inner">
-            <span class="nav-logo">Tracing Food, Tracing Fragility</span>
-            <ul>
-                <li><a href="#ordinary">The Ordinary</a></li>
-                <li><a href="#vulnerability">Vulnerability</a></li>
-                <li><a href="#red-hook">Red Hook</a></li>
-                <li><a href="#unity">Enter the Work</a></li>
-                <li><a href="#library">Reading List</a></li>
-            </ul>
-        </div>
-    </nav>
+    <!-- Reading progress line -->
+    <div class="progress-track" aria-hidden="true">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
 
     <main>
 
@@ -462,6 +451,28 @@
 
     </main>
 
+    <!--==============================================================
+    CHAPTER INDEX
+    ===============================================================-->
+    <aside class="chapter-index">
+        <p class="chapter-index-title">In this essay</p>
+        <ol class="chapter-list">
+            <li><a href="#ordinary">The Condition of the Ordinary</a></li>
+            <li><a href="#feedback">Environmental Feedback Loops</a></li>
+            <li><a href="#vulnerability">Spatializing Vulnerability</a></li>
+            <li><a href="#infrastructure">The Infrastructural Setting</a></li>
+            <li><a href="#mapping">Mapping Patterns of Exposure</a></li>
+            <li><a href="#red-hook">Red Hook: A Site of Convergence</a></li>
+            <li><a href="#investigative">Investigative Aesthetics</a></li>
+            <li><a href="#unity">The Navigable Landscape</a></li>
+            <li><a href="#agency">Limited Agency and Presence</a></li>
+            <li><a href="#politics">The Politics of Urban Food Systems</a></li>
+            <li><a href="#limits">The Limits of Representation</a></li>
+            <li><a href="#closing">Tracing Dependency</a></li>
+            <li><a href="#library">Reading List</a></li>
+        </ol>
+    </aside>
+
     <footer>
         <p>Tracing Food, Tracing Fragility</p>
         <p>Sunni Hu &nbsp;·&nbsp; Columbia University GSAPP &nbsp;·&nbsp; Computational Design Practices &nbsp;·&nbsp; Spring 2026</p>
@@ -485,39 +496,15 @@
         document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
 
         // ============================================================
-        // NAV: reveal after scrolling past opening section
+        // READING PROGRESS LINE
         // ============================================================
-        const nav     = document.getElementById('main-nav');
-        const opening = document.getElementById('opening');
+        const fill = document.getElementById('progress-fill');
 
-        if (nav && opening) {
-            const navReveal = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    nav.classList.toggle('visible', !entry.isIntersecting);
-                });
-            }, { threshold: 0.15 });
-
-            navReveal.observe(opening);
-        }
-
-        // ============================================================
-        // NAV: active section highlighting
-        // ============================================================
-        const navLinks = Array.from(document.querySelectorAll('nav ul a[href^="#"]'));
-        const sections = Array.from(document.querySelectorAll('main section[id]'));
-
-        const activeObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const id = entry.target.id;
-                    navLinks.forEach(link => {
-                        link.classList.toggle('active', link.getAttribute('href') === '#' + id);
-                    });
-                }
-            });
-        }, { rootMargin: '-38% 0px -58% 0px' });
-
-        sections.forEach(s => activeObserver.observe(s));
+        window.addEventListener('scroll', () => {
+            const scrolled  = window.scrollY;
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            fill.style.height = (scrolled / maxScroll * 100) + '%';
+        }, { passive: true });
 
     });
     </script>
