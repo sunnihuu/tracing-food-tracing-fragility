@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracing Food, Tracing Fragility | Sunni Hu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Esteban&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <style>
+
+        /* ================================================================
+           DESIGN SYSTEM
+        ================================================================ */
+        :root {
+            --night:  #080c14;
+            --deep:   #0d1420;
+            --mesh:   #c8cdd6;
+            --warm:   #d4a574;
+            --pink:   #e879a0;
+            --text:   #e8e4dc;
+            --muted:  rgba(232, 228, 220, 0.5);
+            --dim:    rgba(232, 228, 220, 0.18);
+
+            --serif: 'Esteban', serif;
+            --mono:  'IBM Plex Mono', monospace;
+
+            --essay: 680px;
+            --wide:  1100px;
+        }
+
+        /* ================================================================
+           RESET & BASE
+        ================================================================ */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--serif);
+            font-size: 1.05rem;
+            line-height: 1.85;
+            color: var(--text);
+            background-color: var(--night);
+            overflow-x: hidden;
+        }
+
+        /* Vertical rain-line texture */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image: repeating-linear-gradient(
+                90deg,
+                transparent 0px,
+                transparent 72px,
+                rgba(200, 205, 214, 0.016) 72px,
+                rgba(200, 205, 214, 0.016) 73px
+            );
+        }
+
+        /* ================================================================
+           TYPOGRAPHY
+        ================================================================ */
+        h1, h2, h3 {
+            font-family: var(--serif);
+            font-weight: 400;
+            font-style: italic;
+            line-height: 1.2;
+        }
+
+        h1 { font-size: clamp(2.6rem, 6vw, 4.5rem); }
+        h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
+        h3 { font-size: 1.25rem; font-style: normal; }
+
+        p {
+            margin-bottom: 1.5rem;
+            max-width: 65ch;
+        }
+        p:last-child { margin-bottom: 0; }
+
+        em { font-style: italic; }
+
+        a {
+            color: var(--warm);
+            text-decoration: none;
+            transition: opacity 0.25s;
+        }
+        a:hover { opacity: 0.65; }
+
+        /* ================================================================
+           LAYOUT
+        ================================================================ */
+        .essay-col {
+            max-width: var(--essay);
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .narrow-col {
+            max-width: 560px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .wide-col {
+            max-width: var(--wide);
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: start;
+        }
+
+        section {
+            padding: 8rem 5%;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ================================================================
+           SECTION LABELS
+        ================================================================ */
+        .label {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.18em;
+            color: var(--dim);
+            display: block;
+            margin-bottom: 2rem;
+        }
+
+        section h2 {
+            color: var(--mesh);
+            margin-bottom: 2.5rem;
+        }
+
+        /* ================================================================
+           NAVIGATION — hidden until past opening
+        ================================================================ */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.1rem 5%;
+            z-index: 100;
+            background: rgba(8, 12, 20, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(200, 205, 214, 0.07);
+            opacity: 0;
+            transform: translateY(-100%);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            pointer-events: none;
+        }
+
+        nav.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: var(--wide);
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav ul a {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            transition: color 0.25s;
+        }
+
+        nav ul a:hover,
+        nav ul a.active {
+            color: var(--text);
+            opacity: 1;
+        }
+
+        /* ================================================================
+           OPENING SECTION
+        ================================================================ */
+        #opening {
+            height: 100vh;
+            min-height: 640px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 0;
+            z-index: 2;
+        }
+
+        .opening-bg {
+            position: absolute;
+            inset: 0;
+            background: var(--deep);
+        }
+
+        .opening-bg .slot {
+            width: 100%;
+            height: 100%;
+            min-height: unset;
+            border: none;
+            background: var(--deep);
+            border-radius: 0;
+        }
+
+        .opening-bg .slot::before,
+        .opening-bg .slot::after { display: none; }
+
+        .opening-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(8, 12, 20, 0.35) 0%,
+                rgba(8, 12, 20, 0.15) 35%,
+                rgba(8, 12, 20, 0.65) 100%
+            );
+        }
+
+        .opening-text {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            padding: 0 5%;
+        }
+
+        .opening-eyebrow {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.2em;
+            color: rgba(232, 228, 220, 0.4);
+            display: block;
+            margin-bottom: 2.5rem;
+        }
+
+        .opening-title {
+            font-family: var(--serif);
+            font-style: italic;
+            font-size: clamp(2.6rem, 6vw, 4.2rem);
+            color: var(--text);
+            line-height: 1.2;
+            margin-bottom: 2rem;
+        }
+
+        .opening-question {
+            font-family: var(--serif);
+            font-style: italic;
+            font-size: clamp(1rem, 2.2vw, 1.35rem);
+            color: var(--muted);
+            max-width: 42ch;
+            margin: 0 auto 3rem;
+            line-height: 1.75;
+        }
+
+        .opening-meta {
+            font-family: var(--mono);
+            font-size: 0.63rem;
+            letter-spacing: 0.15em;
+            color: rgba(232, 228, 220, 0.28);
+            line-height: 2;
+        }
+
+        .scroll-cue {
+            position: absolute;
+            bottom: 2.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            font-family: var(--mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            color: var(--dim);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .scroll-cue::after {
+            content: '';
+            width: 1px;
+            height: 36px;
+            background: linear-gradient(to bottom, rgba(200,205,214,0.3), transparent);
+            animation: line-drop 2.2s ease-in-out infinite;
+        }
+
+        @keyframes line-drop {
+            0%   { transform: scaleY(0.2) translateY(-10px); opacity: 0; }
+            50%  { opacity: 1; }
+            100% { transform: scaleY(1) translateY(0); opacity: 0.3; }
+        }
+
+        /* ================================================================
+           VISUAL SLOTS
+        ================================================================ */
+        .slot {
+            width: 100%;
+            min-height: 320px;
+            border: 1px solid rgba(200, 205, 214, 0.14);
+            background: rgba(200, 205, 214, 0.025);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            position: relative;
+        }
+
+        /* Corner bracket marks — photogrammetry/technical feel */
+        .slot::before, .slot::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-color: rgba(200, 205, 214, 0.22);
+            border-style: solid;
+        }
+        .slot::before { top: 8px; left: 8px; border-width: 1px 0 0 1px; }
+        .slot::after  { bottom: 8px; right: 8px; border-width: 0 1px 1px 0; }
+
+        .slot-label {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            color: rgba(200, 205, 214, 0.28);
+        }
+
+        .slot-tall   { min-height: 440px; }
+        .slot-large  { min-height: 520px; }
+        .slot-screen { aspect-ratio: 16 / 9; min-height: 0; }
+
+        .slot-note {
+            font-family: var(--mono);
+            font-size: 0.62rem;
+            color: rgba(200, 205, 214, 0.3);
+            letter-spacing: 0.06em;
+            margin-top: 0.6rem;
+            line-height: 1.7;
+        }
+
+        /* ================================================================
+           PULL QUOTES — Unity on-screen text aesthetic
+        ================================================================ */
+        blockquote.pull-quote {
+            font-family: var(--serif);
+            font-style: italic;
+            font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+            line-height: 1.65;
+            color: var(--mesh);
+            border-left: 1px solid rgba(200, 205, 214, 0.22);
+            padding-left: 2rem;
+            margin: 3.5rem 0;
+            max-width: 48ch;
+        }
+
+        blockquote.pull-quote.closing {
+            font-size: clamp(1.3rem, 3vw, 2rem);
+            color: var(--text);
+            border-left-color: rgba(232, 228, 220, 0.3);
+            max-width: 55ch;
+            margin-top: 4rem;
+        }
+
+        /* ================================================================
+           DATA ANNOTATION
+        ================================================================ */
+        .data-block {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--muted);
+            border-left: 1px solid rgba(200, 205, 214, 0.18);
+            padding: 1rem 1.5rem;
+            margin-top: 1.5rem;
+            line-height: 1.8;
+            letter-spacing: 0.05em;
+        }
+
+        .data-block .data-key {
+            color: var(--pink);
+            display: block;
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.12em;
+        }
+
+        /* ================================================================
+           EXPANDABLE DATA PANEL (Red Hook)
+        ================================================================ */
+        details.data-panel {
+            border: 1px solid rgba(200, 205, 214, 0.1);
+            margin-top: 2.5rem;
+        }
+
+        details.data-panel summary {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            list-style: none;
+            transition: color 0.25s;
+            user-select: none;
+        }
+
+        details.data-panel summary::-webkit-details-marker { display: none; }
+
+        details.data-panel summary::after {
+            content: '+';
+            color: var(--pink);
+            font-size: 1rem;
+            flex-shrink: 0;
+            margin-left: 1rem;
+        }
+
+        details.data-panel[open] summary::after { content: '−'; }
+        details.data-panel summary:hover { color: var(--text); }
+
+        .panel-body {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(200, 205, 214, 0.07);
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--muted);
+            line-height: 1.9;
+            letter-spacing: 0.04em;
+        }
+
+        .panel-body p { max-width: none; margin-bottom: 1.2rem; }
+        .panel-body p:last-child { margin-bottom: 0; }
+
+        .panel-key {
+            color: var(--warm);
+            display: block;
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.1em;
+        }
+
+        /* ================================================================
+           UNITY GALLERY — horizontal scroll
+        ================================================================ */
+        .gallery {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding-bottom: 1.5rem;
+            margin-top: 3.5rem;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(200,205,214,0.15) transparent;
+        }
+
+        .gallery::-webkit-scrollbar { height: 2px; }
+        .gallery::-webkit-scrollbar-track { background: transparent; }
+        .gallery::-webkit-scrollbar-thumb {
+            background: rgba(200,205,214,0.18);
+            border-radius: 1px;
+        }
+
+        .gallery-item {
+            flex: 0 0 44%;
+            scroll-snap-align: start;
+        }
+
+        .gallery-item .slot {
+            min-height: 0;
+            aspect-ratio: 16 / 9;
+        }
+
+        .gallery-caption {
+            font-family: var(--serif);
+            font-style: italic;
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-top: 0.75rem;
+            line-height: 1.6;
+            padding: 0 0.2rem;
+        }
+
+        /* Unity enter button */
+        .unity-enter {
+            display: inline-block;
+            margin-top: 3.5rem;
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            letter-spacing: 0.16em;
+            color: var(--text);
+            border: 1px solid rgba(232, 228, 220, 0.35);
+            padding: 0.95rem 2.5rem;
+            transition: border-color 0.3s, color 0.3s, background 0.3s;
+        }
+
+        .unity-enter:hover {
+            border-color: var(--pink);
+            color: var(--pink);
+            background: rgba(232, 121, 160, 0.04);
+            opacity: 1;
+        }
+
+        .unity-center {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        /* ================================================================
+           SECTION DIVIDER
+        ================================================================ */
+        .divider {
+            width: 48px;
+            height: 1px;
+            background: rgba(200, 205, 214, 0.18);
+            margin: 5rem auto;
+        }
+
+        /* ================================================================
+           READING LIST / VISUAL LIBRARY
+        ================================================================ */
+        #library {
+            background: var(--deep);
+        }
+
+        .library-intro {
+            max-width: 52ch;
+            color: var(--muted);
+            margin-top: 0.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1px;
+            border: 1px solid rgba(200, 205, 214, 0.07);
+            background: rgba(200, 205, 214, 0.07);
+        }
+
+        .book-card {
+            background: var(--deep);
+            padding: 1.25rem;
+            transition: background 0.25s;
+        }
+
+        .book-card:hover {
+            background: rgba(200, 205, 214, 0.04);
+        }
+
+        .book-cover {
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            max-height: 210px;
+            border: 1px solid rgba(200, 205, 214, 0.1);
+            background: rgba(200, 205, 214, 0.025);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.9rem;
+            position: relative;
+        }
+
+        .book-cover::before {
+            content: '';
+            position: absolute;
+            top: 5px; left: 5px;
+            width: 8px; height: 8px;
+            border-top: 1px solid rgba(200,205,214,0.18);
+            border-left: 1px solid rgba(200,205,214,0.18);
+        }
+
+        .book-cover::after {
+            content: '';
+            position: absolute;
+            bottom: 5px; right: 5px;
+            width: 8px; height: 8px;
+            border-bottom: 1px solid rgba(200,205,214,0.18);
+            border-right: 1px solid rgba(200,205,214,0.18);
+        }
+
+        .book-cover-label {
+            font-family: var(--mono);
+            font-size: 0.58rem;
+            color: rgba(200, 205, 214, 0.22);
+            letter-spacing: 0.1em;
+        }
+
+        .book-title {
+            font-family: var(--serif);
+            font-style: italic;
+            font-size: 0.9rem;
+            color: var(--text);
+            line-height: 1.4;
+            margin-bottom: 0.25rem;
+        }
+
+        .book-author {
+            font-family: var(--mono);
+            font-size: 0.62rem;
+            color: var(--muted);
+            letter-spacing: 0.04em;
+            line-height: 1.5;
+        }
+
+        .bib-link {
+            margin-top: 2.5rem;
+            text-align: right;
+        }
+
+        .bib-link a {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            border-bottom: 1px solid rgba(232,228,220,0.18);
+            padding-bottom: 2px;
+        }
+
+        /* ================================================================
+           FOOTER
+        ================================================================ */
+        footer {
+            padding: 3rem 5%;
+            border-top: 1px solid rgba(200, 205, 214, 0.07);
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        footer p {
+            font-family: var(--mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.1em;
+            color: rgba(232, 228, 220, 0.25);
+            max-width: none;
+            margin-bottom: 0.4rem;
+        }
+
+        /* ================================================================
+           FADE-IN ANIMATIONS
+        ================================================================ */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(14px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ================================================================
+           RESPONSIVE
+        ================================================================ */
+        @media (max-width: 900px) {
+            .two-col {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .gallery-item { flex: 0 0 78%; }
+        }
+
+        @media (max-width: 600px) {
+            section { padding: 5rem 6%; }
+
+            .gallery-item { flex: 0 0 90%; }
+
+            nav ul {
+                gap: 0.8rem 1.2rem;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+
+            nav ul a { font-size: 0.62rem; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!--==============================================================
+    OPENING — full screen, no nav, one Unity screenshot background
+    ===============================================================-->
+    <section id="opening">
+
+        <div class="opening-bg">
+            <div class="slot">
+                <span class="slot-label">// unity screenshot — exterior, night</span>
+            </div>
+        </div>
+
+        <div class="opening-gradient"></div>
+
+        <div class="opening-text">
+            <span class="opening-eyebrow">Design in Action &nbsp;—&nbsp; Thesis Project Documentation</span>
+            <h1 class="opening-title">Tracing Food,<br>Tracing Fragility</h1>
+            <p class="opening-question">
+                The city feeds us. Quietly. Constantly.<br>
+                But what holds it together?
+            </p>
+            <div class="opening-meta">
+                Sunni Hu &nbsp;·&nbsp; Columbia University GSAPP<br>
+                Computational Design Practices &nbsp;·&nbsp; Spring 2026
+            </div>
+        </div>
+
+        <div class="scroll-cue">scroll</div>
+
+    </section>
+
+    <!--==============================================================
+    NAVIGATION — hidden until past opening
+    ===============================================================-->
+    <nav id="main-nav" aria-label="Essay navigation">
+        <div class="nav-inner">
+            <span class="nav-logo">Tracing Food, Tracing Fragility</span>
+            <ul>
+                <li><a href="#ordinary">The Ordinary</a></li>
+                <li><a href="#vulnerability">Vulnerability</a></li>
+                <li><a href="#red-hook">Red Hook</a></li>
+                <li><a href="#unity">Enter the Work</a></li>
+                <li><a href="#library">Reading List</a></li>
+                <li><a href="bibliography.html">Bibliography</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+
+        <!--==============================================================
+        01. THE CONDITION OF THE ORDINARY
+        ===============================================================-->
+        <section id="ordinary">
+            <div class="wide-col fade-in">
+                <div class="two-col">
+
+                    <div>
+                        <span class="label">// 01 &mdash; The Condition of the Ordinary</span>
+                        <h2>The Condition of the Ordinary</h2>
+                        <p>This project begins from a condition that is both ordinary and persistent: the everyday availability of food.</p>
+                        <p>Food is encountered daily through routines of purchasing, cooking, storing, and consuming. It appears stable, predictable, and continuously accessible. Yet this apparent stability depends on systems that are rarely visible in everyday experience: distribution networks, storage infrastructures, transportation systems, and regulatory structures that operate in the background, sustaining the conditions under which food can be taken for granted.</p>
+                        <p>The project uses food as a lens for tracing these hidden systems, as a way of surfacing what is embedded in everyday life but rarely examined. To follow food is to follow dependency itself.</p>
+                    </div>
+
+                    <div>
+                        <div class="slot slot-tall">
+                            <span class="slot-label">// photogrammetry — street level</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!--==============================================================
+        02. ENVIRONMENTAL FEEDBACK LOOPS
+        ===============================================================-->
+        <section id="feedback">
+            <div class="wide-col fade-in">
+                <div class="two-col">
+
+                    <div>
+                        <span class="label">// 02 &mdash; Environmental Feedback Loops</span>
+                        <h2>Environmental Feedback Loops</h2>
+                        <p>Early research in this project focused on the environmental dimensions of these systems. The concept of a foodprint offered a way to understand food as a set of measurable impacts — like carbon emissions, land use, energy consumption — and to situate it within a broader cycle linking production, transport, consumption, and waste to climate processes.</p>
+                        <p>What this mapping reveals is not a linear sequence, but a feedback loop: food systems contribute to climate change, while climate change introduces instability into food production, distribution, and pricing. Cause and effect do not separate neatly. They fold back on one another, producing conditions that are difficult to resolve through any single intervention.</p>
+                        <p>This understanding is shaped by environmental systems thinking, where feedback loops are understood as recursive processes rather than linear chains of cause and effect, and where effects become conditions for further action.</p>
+                    </div>
+
+                    <div>
+                        <div class="slot" style="min-height: 380px;">
+                            <span class="slot-label">// feedback loop diagram</span>
+                        </div>
+                        <p class="slot-note">
+                            production &nbsp;→&nbsp; transport &nbsp;→&nbsp; consumption &nbsp;→&nbsp; waste &nbsp;→&nbsp; climate &nbsp;→&nbsp; production
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!--==============================================================
+        03. SPATIALIZING VULNERABILITY
+        ===============================================================-->
+        <section id="vulnerability">
+            <div class="essay-col fade-in">
+                <span class="label">// 03 &mdash; Spatializing Vulnerability</span>
+                <h2>Spatializing Vulnerability</h2>
+                <p>This line of inquiry extends into the city. I developed a Food Vulnerability Index to examine how food stability varies across neighborhoods in New York City, drawing together three dimensions: economic pressure, consumption intensity, and household storage capacity. The aim was to surface patterns of dependency that might otherwise remain invisible.</p>
+                <p>Reading <em>Data Feminism</em> (D'Ignazio and Klein) informed this process directly. Their argument that data reflects decisions, priorities, and omissions rather than neutral facts reshaped how I approached the index. The map is a constructed lens, one that illuminates certain relationships while inevitably casting others into shadow.</p>
+                <p>Understood this way, the index becomes a means of revealing where stability appears most contingent. In several areas of the city, food access depends not on proximity alone, but on the uninterrupted functioning of supply chains that most residents never encounter directly. Stability is borrowed, sustained by systems that remain outside individual control.</p>
+            </div>
+
+            <div class="wide-col fade-in" style="margin-top: 3rem;">
+                <div class="slot slot-large">
+                    <span class="slot-label">// Food Vulnerability Index map — NYC</span>
+                </div>
+                <div class="data-block">
+                    <span class="data-key">// INDEX DIMENSIONS</span>
+                    economic pressure &nbsp;·&nbsp; consumption intensity &nbsp;·&nbsp; household storage capacity<br>
+                    source: census data, USDA food access research atlas, NYC open data<br>
+                    methodology: composite weighted index per census tract
+                </div>
+            </div>
+        </section>
+
+        <!--==============================================================
+        04. THE INFRASTRUCTURAL SETTING
+        ===============================================================-->
+        <section id="infrastructure">
+            <div class="essay-col fade-in">
+                <span class="label">// 04 &mdash; The Infrastructural Setting</span>
+                <h2>The Infrastructural Setting</h2>
+                <p>These patterns of dependency become clearer when food systems are understood as infrastructure.</p>
+                <p><em>All Data Are Local</em> reinforced that data and systems must be read in context, that the same supply chain produces different conditions depending on where one stands within it. Graham and Marvin's <em>Splintering Urbanism</em> extends this further, arguing that infrastructure does not simply distribute services evenly, but actively organizes uneven conditions of access and risk. Networks that appear seamless from the outside produce sharp distinctions on the inside.</p>
+                <p>Kate Crawford's <em>Atlas of AI</em> added another layer: that technological systems, often perceived as frictionless and automatic, depend on continuous material and labor processes that are systematically made invisible. This insight applies directly to food logistics. The cold storage facility, the delivery route, the overnight restocking of a shelf: these are not background functions but active conditions of everyday life.</p>
+
+                <blockquote class="pull-quote">
+                    Food systems operate as infrastructures that produce both availability and exposure. They do not merely move goods — they distribute risk.
+                </blockquote>
+            </div>
+        </section>
+
+        <!--==============================================================
+        05. MAPPING PATTERNS OF EXPOSURE
+        ===============================================================-->
+        <section id="mapping">
+            <div class="wide-col fade-in">
+                <div class="two-col">
+
+                    <div>
+                        <span class="label">// 05 &mdash; Mapping Patterns of Exposure</span>
+                        <h2>Mapping Patterns of Exposure</h2>
+                        <p>With this framework in place, the project examines how these conditions are distributed across the city through layered mapping.</p>
+                        <p>Flood risk, land use, logistics infrastructure, transportation access, and food distribution networks are analyzed in relation to one another. No single layer tells the full story. What becomes significant is where they coincide: where environmental exposure overlaps with infrastructural dependency, where the absence of redundancy meets the presence of risk.</p>
+                        <p>Vulnerability does not appear uniformly across the map. It concentrates, in ways that reflect accumulated decisions about where infrastructure is built, how land is used, and whose access is treated as essential. Fragility emerges not as an isolated event, but as a structural condition embedded in the organization of the city itself.</p>
+                        <p>This mapping process became the analytical bridge toward a specific site.</p>
+                    </div>
+
+                    <div>
+                        <div class="slot slot-tall">
+                            <span class="slot-label">// layered vulnerability map — NYC</span>
+                        </div>
+                        <p class="slot-note">
+                            layers: flood risk / logistics infrastructure /<br>
+                            transit access / food distribution network
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!--==============================================================
+        06. RED HOOK: A SITE OF CONVERGENCE
+        ===============================================================-->
+        <section id="red-hook">
+            <div class="wide-col fade-in">
+                <span class="label">// 06 &mdash; Red Hook: A Site of Convergence</span>
+                <h2>Red Hook: A Site of Convergence</h2>
+
+                <div class="two-col" style="margin-top: 0;">
+
+                    <div>
+                        <p>Red Hook surfaces through this process, as a place where these overlapping conditions become simultaneously legible.</p>
+                        <p>Low elevation, sustained coastal flood exposure, limited transit connections, and a dense concentration of logistics and warehouse infrastructure converge within a relatively contained geography. These are not independent characteristics. They are part of a longer history of land use decisions that positioned industrial functions at the waterfront and insulated other neighborhoods from both the infrastructure and the risk.</p>
+                        <p>At the same time, Red Hook supports residential life and local food networks whose everyday functioning depends on the systems visible throughout the neighborhood. This proximity between global logistics and bodega shelves, between loading docks and kitchen tables — is what makes the site generative. It allows systems that are typically encountered only through their effects to be directly observed in their spatial and material form.</p>
+                        <p>Reading <em>Radical Futurisms</em> shifted how I understand Red Hook's relationship to flooding. Demos argues against treating climate events as sudden ruptures, locating them instead within slow, accumulating processes. Flooding in Red Hook is a condition that normal life is organized around.</p>
+
+                        <details class="data-panel">
+                            <summary>// DATA PANEL — UNEVEN MOVEMENT &nbsp;&nbsp;&nbsp; Red Hook, Brooklyn</summary>
+                            <div class="panel-body">
+                                <p>
+                                    <span class="panel-key">SITE COORDINATES</span>
+                                    Red Hook, Brooklyn, New York<br>
+                                    40.6749° N, 74.0094° W
+                                </p>
+                                <p>
+                                    <span class="panel-key">FLOOD EXPOSURE</span>
+                                    FEMA Zone AE — 100-year flood plain<br>
+                                    Storm surge depth (Cat. 2): est. 4–6 ft above grade<br>
+                                    Hurricane Sandy (2012): 6 ft inundation, ~80% neighborhood affected
+                                </p>
+                                <p>
+                                    <span class="panel-key">TRANSIT</span>
+                                    0 subway stations within neighborhood<br>
+                                    Bus: B61 (waterfront corridor), B57 — limited frequency<br>
+                                    Walk score: 88 &nbsp;·&nbsp; Transit score: 57
+                                </p>
+                                <p>
+                                    <span class="panel-key">LOGISTICS INFRASTRUCTURE</span>
+                                    Atlantic Basin, distribution warehouses along waterfront<br>
+                                    Concentration of cold storage + last-mile facilities<br>
+                                    Historically: Red Hook Container Terminal
+                                </p>
+                                <p>
+                                    <span class="panel-key">OBSERVATION</span>
+                                    Key distribution hub located in 100-year flood plain.<br>
+                                    Proximity to water is both a logistical advantage<br>
+                                    and a critical point of failure.
+                                </p>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <div class="slot slot-tall">
+                            <span class="slot-label">// aerial map — Red Hook, Brooklyn</span>
+                        </div>
+                        <div class="slot">
+                            <span class="slot-label">// photography — waterfront / loading dock</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!--==============================================================
+        07. INVESTIGATIVE AESTHETICS
+        ===============================================================-->
+        <section id="investigative">
+            <div class="narrow-col fade-in">
+                <span class="label">// 07 &mdash; Investigative Aesthetics</span>
+                <h2>Investigative Aesthetics</h2>
+                <p>Deciding how to represent these systems required its own line of inquiry. Fuller and Weizman's concept of investigative aesthetics offered the most useful framework: the idea that representation can function as a form of inquiry. Systems are not presented as complete, resolved wholes — they are reconstructed through fragments, traces, and spatial encounters. The act of representation becomes a method, not a conclusion.</p>
+                <p>This concept shaped every subsequent design decision in the project. The work proceeds through accumulation, gathering and organizing fragments until patterns become perceptible, while preserving the incompleteness that keeps interpretation open.</p>
+            </div>
+        </section>
+
+        <!--==============================================================
+        08. THE NAVIGABLE LANDSCAPE — "Enter the Work"
+        ===============================================================-->
+        <section id="unity">
+            <div class="wide-col fade-in">
+                <span class="label">// 08 &mdash; The Navigable Landscape</span>
+                <h2>The Navigable Landscape</h2>
+
+                <div class="essay-col" style="margin-left: 0; margin-right: 0;">
+                    <p>The project develops an interactive spatial environment in Unity, structured around the logic of infrastructure itself.</p>
+                    <p>Photogrammetry captures fragments of the built environment in Red Hook: loading docks, delivery routes, storefronts, infrastructure at the waterfront. These fragments are deliberately partial, retaining texture and imperfection. The incompleteness is not a technical limitation but a design choice: a complete model would suggest a complete understanding, and that is precisely what the project resists. Forensic Architecture's practice, particularly its approach to assembling evidence across scales and registers, informed this logic directly, demonstrating how spatial reconstruction can operate as a form of knowledge production rather than mere documentation.</p>
+                    <p>Navigation follows a node-based structure, moving users between fixed viewpoints with limited freedom upon arrival. Movement is sequential and constrained, mirroring the predefined pathways of infrastructure itself, where circulation is conditioned by decisions made elsewhere.</p>
+                    <p>Throughout the environment, contextual panels open at each node, surfacing fragments of information: short narratives, observations, data points. These function less as explanations than as traces, requiring users to assemble meaning across movement. Informed by the visual investigative practices discussed in <em>Reading Visual Investigations: Between Advocacy, Journalism, and Law</em>, the use of photogrammetry and spatial reconstruction positions design as a method of inquiry rather than communication. The environment accumulates.</p>
+                </div>
+
+                <!-- Unity screenshot gallery — horizontal scroll -->
+                <div class="gallery">
+                    <div class="gallery-item">
+                        <div class="slot slot-screen">
+                            <span class="slot-label">// unity screenshot 01</span>
+                        </div>
+                        <p class="gallery-caption">At the surface, it gathers — windows, signs, small exchanges.</p>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="slot slot-screen">
+                            <span class="slot-label">// unity screenshot 02</span>
+                        </div>
+                        <p class="gallery-caption">Inside, things settle. Repeated, unnoticed, necessary.</p>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="slot slot-screen">
+                            <span class="slot-label">// unity screenshot 03</span>
+                        </div>
+                        <p class="gallery-caption">Movement continues, linking what is near to what is not.</p>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="slot slot-screen">
+                            <span class="slot-label">// unity screenshot 04</span>
+                        </div>
+                        <p class="gallery-caption">Before anything arrives, something is already in motion.</p>
+                    </div>
+                </div>
+
+                <div class="unity-center">
+                    <a href="#" class="unity-enter">Enter the Environment &nbsp;→</a>
+                </div>
+
+            </div>
+        </section>
+
+        <!--==============================================================
+        09. LIMITED AGENCY AND PRESENCE
+        ===============================================================-->
+        <section id="agency">
+            <div class="essay-col fade-in">
+                <span class="label">// 09 &mdash; Limited Agency and Presence</span>
+                <h2>Limited Agency and Presence</h2>
+                <p>Interaction within the environment is deliberately constrained.</p>
+                <p>Drawing from Flanagan's <em>Critical Play</em> and Bishop's <em>Artificial Hells</em>, the project resists the assumption that participation inherently produces agency. To be present within a system is not to control it. Users navigate, observe, and uncover, but they do not alter what they find. The conditions of the environment are fixed.</p>
+                <p>This creates a specific tension between presence and power: users are positioned within the system, made to move through it and encounter its logic, but cannot reshape it. This is intentional. It is an invitation to notice, to recognize that the systems shaping food access in Red Hook — and across the city — are not fixed by nature. They are the result of decisions made across planning, logistics, and policy, and could be otherwise.</p>
+            </div>
+        </section>
+
+        <!--==============================================================
+        10. THE POLITICS OF URBAN FOOD SYSTEMS
+        ===============================================================-->
+        <section id="politics">
+            <div class="essay-col fade-in">
+                <span class="label">// 10 &mdash; The Politics of Urban Food Systems</span>
+                <h2>The Politics of Urban Food Systems</h2>
+                <p>Reading Ruha Benjamin and Kimberlé Crenshaw situates these conditions within broader structures of power.</p>
+                <p>Benjamin's work on race and technological systems reveals how infrastructure that appears neutral consistently reproduces existing inequalities. Crenshaw's framework of intersectionality insists that vulnerability cannot be understood through a single lens — it is produced through overlapping conditions of race, class, and geography. Together, these frameworks reframe what the mapping in this project is actually showing. The Food Vulnerability Index is a picture of where multiple systems of disadvantage converge.</p>
+                <p>Food systems are not neutral arrangements of logistics and supply. They are shaped by policy, investment, labor conditions, and historical patterns of access, producing profoundly uneven conditions across the city. Who has access to fresh food, who lives near distribution infrastructure, whose neighborhood absorbs the environmental costs of supply chains: these are not technical questions. They are political ones.</p>
+
+                <blockquote class="pull-quote">
+                    The fixed nodes, the constrained navigation, the inability to alter what is encountered — they reflect the experience of moving through a system whose terms have already been set, by decisions made elsewhere, for interests that are rarely made visible.
+                </blockquote>
+            </div>
+        </section>
+
+        <!--==============================================================
+        11. THE LIMITS OF REPRESENTATION
+        ===============================================================-->
+        <section id="limits">
+            <div class="narrow-col fade-in">
+                <span class="label">// 11 &mdash; The Limits of Representation</span>
+                <h2>The Limits of Representation</h2>
+                <p>Not all of the food system can be fully represented, and the project does not try to.</p>
+                <p>As Nora N. Khan argues, computational systems cannot capture subjective and situated experience — the texture of living within conditions that a diagram can only approximate. The project works with this limitation, treating incompleteness not as a failure but as an honest account of what representation can do.</p>
+                <p>Photogrammetry, in this sense, is an ongoing practice. Each capture is partial, each return to Red Hook producing something slightly different. The fragments accumulate without resolving. Visibility remains incomplete by design.</p>
+                <p>What the environment can do is create conditions for encounter, moments where the scale and dependency of these supply chains and distribution networks become perceptible, even if they cannot be fully grasped. To represent incompleteness is itself a form of knowledge: an acknowledgment that the system exceeds any single attempt to trace it.</p>
+            </div>
+        </section>
+
+        <!--==============================================================
+        12. TRACING DEPENDENCY — closing
+        ===============================================================-->
+        <section id="closing">
+            <div class="essay-col fade-in">
+                <span class="label">// 12 &mdash; Tracing Dependency</span>
+                <h2>Tracing Dependency</h2>
+                <p>Tracing food becomes a method of tracing dependency.</p>
+                <p>What appears stable is revealed as contingent, reliant on systems that are continuous, largely invisible, and unevenly distributed. A gap in the supply chain, a flooded road, a disrupted logistics network: these are not aberrations but demonstrations of how tightly the ordinary depends on what it cannot see.</p>
+                <p>Red Hook is one neighborhood. But the conditions it makes visible are not local. Across New York City, food stability is unevenly held, shaped by decades of land use decisions, infrastructure investment, and policy priorities that have concentrated risk in some communities while insulating others. The vulnerability is not accidental. It is produced. And it follows the same lines as every other form of urban inequality: who lives where, who absorbs the cost of infrastructure, whose access to food has remained contingent, shaped by conditions outside their control.</p>
+                <p>Computational tools made this project possible. Data revealed patterns of vulnerability across the city. Photogrammetry reconstructed fragments of a built environment. The navigable environment in Unity positioned users inside the system, creating conditions for encounter.</p>
+                <p>These tools also mark the boundary of what this project can do. The fragility of food infrastructure is not a problem that can be resolved through representation alone. It requires attention across multiple scales: policy, investment, community knowledge, and urban planning, and a collective willingness to treat food access as a public responsibility.</p>
+                <p>Food infrastructure is public infrastructure. The conditions that make it fragile are structural, not incidental, unevenly distributed across a city where the cost of vulnerability has never been shared equally. Making that visible is not enough. But it is where any serious rethinking has to begin.</p>
+
+                <blockquote class="pull-quote closing">
+                    To trace the food is to trace the fragility. And to trace the fragility is to understand not just a neighborhood, but a city, and the decisions — visible and invisible — that continue to shape who it is built for.
+                </blockquote>
+            </div>
+        </section>
+
+        <!--==============================================================
+        VISUAL LIBRARY
+        ===============================================================-->
+        <section id="library">
+            <div class="wide-col fade-in">
+                <span class="label">// Reading List &mdash; Works That Shaped This Project</span>
+                <h2>Reading List</h2>
+                <p class="library-intro">
+                    These texts formed the conceptual backbone of the research. Each contributed a distinct framework — for understanding data, infrastructure, race, play, and the limits of representation.
+                </p>
+
+                <div class="book-grid">
+
+                    <div class="book-card">
+                        <div class="book-cover"><span class="book-cover-label">// cover</span></div>
+                        <p class="book-title">Race After Technology</p>
+                        <p class="book-author">Ruha Benjamin<br>Polity Press, 2019</p>
+                    </div>
+
+                    <div class="book-card">
+                        <div class="book-cover"><span class="book-cover-label">// cover</span></div>
+                        <p class="book-title">Artificial Hells</p>
+                        <p class="book-author">Claire Bishop<br>Verso, 2012</p>
+                    </div>
+
+                    <div class="book-card">
+                        <div class="book-cover"><span class="book-cover-label">// cover</span></div>
+                        <p class="book-title">Atlas of AI</p>
+                        <p class="book-author">Kate Crawford<br>Yale University Press, 2021</p>
+                    </div>
+
+                    <div class="book-card">
+                        <div class="book-cover"><span class="book-cover-label">// cover</span></div>
+                        <p class="book-title">Radical Futurisms</p>
+                        <p class="book-author">T.J. Demos<br>Sternberg Press, 2023</p>
+                    </div>
+
+                    <div class="book-card">
+                        <div class="book-cover"><span class="book-cover-label">// cover</span></div>
+                        <p class="book-title">Data Feminism</p>
+                        <p class="book-author">Catherine D'Ignazio &amp; Lauren Klein<br>MIT Press, 2020</p>
+                    </div>
+
+                    <div class="book-card">
+                        <div class="book-cover"><span class="book-cover-label">// cover</span></div>
+                        <p class="book-title">Critical Play</p>
+                        <p class="book-author">Mary Flanagan<br>MIT Press, 2009</p>
+                    </div>
+
+                    <div class="book-card">
+                        <div class="book-cover"><span class="book-cover-label">// cover</span></div>
+                        <p class="book-title">Investigative Aesthetics</p>
+                        <p class="book-author">Matthew Fuller &amp; Eyal Weizman<br>Verso, 2021</p>
+                    </div>
+
+                    <div class="book-card">
+                        <div class="book-cover"><span class="book-cover-label">// cover</span></div>
+                        <p class="book-title">Splintering Urbanism</p>
+                        <p class="book-author">Stephen Graham &amp; Simon Marvin<br>Routledge, 2001</p>
+                    </div>
+
+                    <div class="book-card">
+                        <div class="book-cover"><span class="book-cover-label">// cover</span></div>
+                        <p class="book-title">The Artificial and the Real</p>
+                        <p class="book-author">Nora N. Khan<br>Art Metropole / Sternberg Press, 2024</p>
+                    </div>
+
+                    <div class="book-card">
+                        <div class="book-cover"><span class="book-cover-label">// cover</span></div>
+                        <p class="book-title">All Data Are Local</p>
+                        <p class="book-author">Yanni Alexander Loukissas<br>MIT Press, 2019</p>
+                    </div>
+
+                    <div class="book-card">
+                        <div class="book-cover"><span class="book-cover-label">// cover</span></div>
+                        <p class="book-title">Reading Visual Investigations</p>
+                        <p class="book-author">Luksch &amp; Lepik, eds.<br>Hatje Cantz, 2024</p>
+                    </div>
+
+                    <div class="book-card">
+                        <div class="book-cover"><span class="book-cover-label">// paper</span></div>
+                        <p class="book-title">Demarginalizing the Intersection of Race and Sex</p>
+                        <p class="book-author">Kimberlé Crenshaw<br>U. of Chicago Legal Forum, 1989</p>
+                    </div>
+
+                </div>
+
+                <div class="bib-link">
+                    <a href="bibliography.html">Full Bibliography &nbsp;→</a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Tracing Food, Tracing Fragility</p>
+        <p>Sunni Hu &nbsp;·&nbsp; Columbia University GSAPP &nbsp;·&nbsp; Computational Design Practices &nbsp;·&nbsp; Spring 2026</p>
+        <p style="margin-top: 0.8rem;">Design in Action — Thesis Project Documentation &amp; Reflection</p>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // ============================================================
+        // SCROLL-TRIGGERED FADE-IN
+        // ============================================================
+        const fadeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.07 });
+
+        document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
+
+        // ============================================================
+        // NAV: reveal after scrolling past opening section
+        // ============================================================
+        const nav     = document.getElementById('main-nav');
+        const opening = document.getElementById('opening');
+
+        if (nav && opening) {
+            const navReveal = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    nav.classList.toggle('visible', !entry.isIntersecting);
+                });
+            }, { threshold: 0.15 });
+
+            navReveal.observe(opening);
+        }
+
+        // ============================================================
+        // NAV: active section highlighting
+        // ============================================================
+        const navLinks = Array.from(document.querySelectorAll('nav ul a[href^="#"]'));
+        const sections = Array.from(document.querySelectorAll('main section[id]'));
+
+        const activeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    navLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                    });
+                }
+            });
+        }, { rootMargin: '-38% 0px -58% 0px' });
+
+        sections.forEach(s => activeObserver.observe(s));
+
+    });
+    </script>
+
+</body>
+</html>
