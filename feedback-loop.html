@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Loop Diagram</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400&family=Esteban&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #080c14;
+            overflow: hidden;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        #wrap {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* ── Controls ── */
+        .controls {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .toggle-btn {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            padding: 5px 12px;
+            border: 1px solid rgba(232, 228, 220, 0.18);
+            background: rgba(8, 12, 20, 0.85);
+            color: rgba(232, 228, 220, 0.35);
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .toggle-btn.on-food    { border-color: #3a9e8a; color: #3a9e8a; }
+        .toggle-btn.on-climate { border-color: #e05555; color: #e05555; }
+
+        /* ── Legend ── */
+        .legend {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.57rem;
+            letter-spacing: 0.1em;
+            color: rgba(232, 228, 220, 0.38);
+        }
+
+        .l-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .l-dash {
+            width: 18px;
+            height: 1px;
+            flex-shrink: 0;
+        }
+
+        /* ── Tooltip ── */
+        .tooltip {
+            position: absolute;
+            background: rgba(13, 20, 32, 0.97);
+            border: 1px solid rgba(232, 228, 220, 0.1);
+            padding: 9px 13px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 20;
+            max-width: 195px;
+        }
+
+        .tt-name {
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            color: #e8e4dc;
+            margin-bottom: 4px;
+        }
+
+        .tt-desc {
+            font-family: 'Esteban', serif;
+            font-style: italic;
+            font-size: 0.7rem;
+            color: rgba(232, 228, 220, 0.5);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap">
+
+    <div class="controls">
+        <button class="toggle-btn on-food"    id="btn-food">Food System</button>
+        <button class="toggle-btn on-climate" id="btn-climate">Climate Loop</button>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="l-dot" style="background:#3a9e8a"></div>
+            Food System Loop
+        </div>
+        <div class="legend-item">
+            <div class="l-dot" style="background:#e05555"></div>
+            Climate Loop
+        </div>
+        <div class="legend-item">
+            <div class="l-dash" style="background:repeating-linear-gradient(90deg,#888 0,#888 4px,transparent 4px,transparent 7px)"></div>
+            System Bridge
+        </div>
+        <div class="legend-item">
+            <div class="l-dash" style="background:repeating-linear-gradient(90deg,#d4a030 0,#d4a030 4px,transparent 4px,transparent 7px)"></div>
+            Feedback
+        </div>
+    </div>
+
+    <div class="tooltip" id="tooltip">
+        <div class="tt-name" id="tt-name"></div>
+        <div class="tt-desc" id="tt-desc"></div>
+    </div>
+
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+// ================================================================
+// LAYOUT CONSTANTS
+// ================================================================
+const W = 900, H = 470;
+const NODE_R = 20;
+
+const RAD = deg => deg * Math.PI / 180;
+
+// Food system loop: center (215, 238), radius 140
+const FX = 215, FY = 238, FR = 140;
+const fp = deg => ({ x: FX + FR * Math.cos(RAD(deg)), y: FY + FR * Math.sin(RAD(deg)) });
+
+// Climate loop: center (685, 238), radius 140
+const CX = 685, CY = 238, CR = 140;
+const cp = deg => ({ x: CX + CR * Math.cos(RAD(deg)), y: CY + CR * Math.sin(RAD(deg)) });
+
+// ================================================================
+// DATA
+// ================================================================
+const TIPS = {
+    'Production':            'Where the food system begins',
+    'Processing':            'Adds energy cost before food reaches retail',
+    'Transport':             'Links every node in the system',
+    'Retail':                'The visible end of an invisible chain',
+    'Consumption':           'Daily, repeated, taken for granted',
+    'Waste':                 'Completes the loop, feeds back into emissions',
+    'Climate Change':        'Food systems generate 26% of global emissions',
+    'Extreme Weather':       'Disrupts growing seasons and supply routes',
+    'Reduced Yields':        'Less food produced under climate stress',
+    'Urban Food Shortages':  'Concentrated in low-income neighborhoods',
+    'System Expansion':      'Growth accelerates the cycle',
+    'High Emissions':        'Transport and processing release carbon',
+};
+
+const nodes = [
+    // Food system loop — clockwise from top
+    { id: 'production',          label: 'Production',          loop: 'food',    color: '#3a9e8a', ...fp(-90)  },
+    { id: 'processing',          label: 'Processing',          loop: 'food',    color: '#3a9e8a', ...fp(-30)  },
+    { id: 'transport',           label: 'Transport',           loop: 'bridge',  color: '#888888', ...fp(30)   },
+    { id: 'retail',              label: 'Retail',              loop: 'food',    color: '#3a9e8a', ...fp(90)   },
+    { id: 'consumption',         label: 'Consumption',         loop: 'food',    color: '#3a9e8a', ...fp(150)  },
+    { id: 'waste',               label: 'Waste',               loop: 'food',    color: '#3a9e8a', ...fp(210)  },
+    // Climate loop — clockwise from top
+    { id: 'climate_change',      label: 'Climate Change',      loop: 'climate', color: '#e05555', ...cp(-90)  },
+    { id: 'extreme_weather',     label: 'Extreme Weather',     loop: 'climate', color: '#e05555', ...cp(-30)  },
+    { id: 'reduced_yields',      label: 'Reduced Yields',      loop: 'climate', color: '#e05555', ...cp(30)   },
+    { id: 'urban_shortages',     label: 'Urban Food Shortages',loop: 'climate', color: '#e05555', ...cp(90)   },
+    { id: 'system_expansion',    label: 'System Expansion',    loop: 'bridge',  color: '#d4a030', ...cp(150)  },
+    { id: 'high_emissions',      label: 'High Emissions',      loop: 'climate', color: '#e05555', ...cp(210)  },
+];
+
+const links = [
+    // Food loop (solid teal)
+    { s: 'production',        t: 'processing',        type: 'food',     dash: false },
+    { s: 'processing',        t: 'transport',         type: 'food',     dash: false },
+    { s: 'transport',         t: 'retail',            type: 'food',     dash: false },
+    { s: 'retail',            t: 'consumption',       type: 'food',     dash: false },
+    { s: 'consumption',       t: 'waste',             type: 'food',     dash: false },
+    { s: 'waste',             t: 'production',        type: 'food',     dash: false },
+    // Climate loop (solid red)
+    { s: 'climate_change',    t: 'extreme_weather',   type: 'climate',  dash: false },
+    { s: 'extreme_weather',   t: 'reduced_yields',    type: 'climate',  dash: false },
+    { s: 'reduced_yields',    t: 'urban_shortages',   type: 'climate',  dash: false },
+    { s: 'urban_shortages',   t: 'system_expansion',  type: 'climate',  dash: false },
+    { s: 'system_expansion',  t: 'high_emissions',    type: 'climate',  dash: false },
+    // Feedback — closes climate loop, dashed gold
+    { s: 'high_emissions',    t: 'climate_change',    type: 'feedback', dash: true  },
+    // System bridges (dashed grey)
+    { s: 'production',        t: 'climate_change',    type: 'bridge',   dash: true  },
+    { s: 'transport',         t: 'urban_shortages',   type: 'bridge',   dash: true  },
+    { s: 'high_emissions',    t: 'production',        type: 'bridge',   dash: true  },
+    { s: 'system_expansion',  t: 'retail',            type: 'bridge',   dash: true  },
+];
+
+const COLORS = {
+    food:     '#3a9e8a',
+    climate:  '#e05555',
+    bridge:   'rgba(136,136,136,0.5)',
+    feedback: '#d4a030',
+};
+
+// ================================================================
+// SVG SETUP
+// ================================================================
+const svg = d3.select('#wrap').append('svg')
+    .attr('viewBox', `0 0 ${W} ${H}`)
+    .attr('preserveAspectRatio', 'xMidYMid meet');
+
+// Arrow markers — one per link type
+const defs = svg.append('defs');
+
+Object.entries(COLORS).forEach(([type, color]) => {
+    defs.append('marker')
+        .attr('id',          `arr-${type}`)
+        .attr('viewBox',     '0 -5 10 10')
+        .attr('refX',        9)
+        .attr('refY',        0)
+        .attr('markerWidth', 5)
+        .attr('markerHeight',5)
+        .attr('orient',      'auto')
+        .append('path')
+        .attr('d',    'M0,-5L10,0L0,5')
+        .attr('fill', color);
+});
+
+// ================================================================
+// HELPERS
+// ================================================================
+const nMap = Object.fromEntries(nodes.map(n => [n.id, n]));
+
+// Shorten line so it ends at circle edge, not node center
+function edgeCoords(d) {
+    const s = nMap[d.s], t = nMap[d.t];
+    const dx = t.x - s.x, dy = t.y - s.y;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    const pad = NODE_R + 3;
+    return {
+        x1: s.x + (dx / len) * pad,
+        y1: s.y + (dy / len) * pad,
+        x2: t.x - (dx / len) * pad,
+        y2: t.y - (dy / len) * pad,
+    };
+}
+
+// Wrap label into lines that fit roughly inside node diameter
+function wrapLabel(label) {
+    const words = label.split(' ');
+    if (words.length === 1) return [label];
+    const mid = Math.ceil(words.length / 2);
+    return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
+}
+
+// ================================================================
+// DRAW LINKS
+// ================================================================
+const linkSel = svg.append('g').attr('class', 'links')
+    .selectAll('line')
+    .data(links)
+    .enter().append('line')
+    .each(function(d) {
+        const c = edgeCoords(d);
+        d3.select(this)
+            .attr('x1', c.x1).attr('y1', c.y1)
+            .attr('x2', c.x2).attr('y2', c.y2);
+    })
+    .attr('stroke',           d => COLORS[d.type])
+    .attr('stroke-width',     d => d.type === 'bridge' ? 1 : 1.5)
+    .attr('stroke-dasharray', d => d.dash ? '5 4' : 'none')
+    .attr('opacity',          0.65)
+    .attr('marker-end',       d => `url(#arr-${d.type})`);
+
+// ================================================================
+// DRAW NODES
+// ================================================================
+const nodeSel = svg.append('g').attr('class', 'nodes')
+    .selectAll('g')
+    .data(nodes)
+    .enter().append('g')
+    .attr('transform', d => `translate(${d.x},${d.y})`)
+    .style('cursor', 'pointer');
+
+nodeSel.append('circle')
+    .attr('r',            NODE_R)
+    .attr('fill',         d => d.color + '18')
+    .attr('stroke',       d => d.color)
+    .attr('stroke-width', 1.5);
+
+// Labels — split into two lines if needed
+nodeSel.each(function(d) {
+    const lines  = wrapLabel(d.label);
+    const lineH  = 11;
+    const startY = -(lines.length - 1) * lineH / 2;
+    const g      = d3.select(this);
+
+    lines.forEach((line, i) => {
+        g.append('text')
+            .attr('text-anchor',  'middle')
+            .attr('y',            startY + i * lineH)
+            .attr('dy',           '0.35em')
+            .attr('fill',         '#e8e4dc')
+            .attr('font-family',  "'IBM Plex Mono', monospace")
+            .attr('font-size',    '8px')
+            .attr('pointer-events', 'none')
+            .text(line);
+    });
+});
+
+// ================================================================
+// TOOLTIP
+// ================================================================
+const tooltip = document.getElementById('tooltip');
+const ttName  = document.getElementById('tt-name');
+const ttDesc  = document.getElementById('tt-desc');
+const wrap    = document.getElementById('wrap');
+
+nodeSel
+    .on('mouseover', (event, d) => {
+        ttName.textContent = d.label;
+        ttDesc.textContent = TIPS[d.label] || '';
+        tooltip.style.opacity = '1';
+    })
+    .on('mousemove', event => {
+        const r = wrap.getBoundingClientRect();
+        const x = event.clientX - r.left + 16;
+        const y = event.clientY - r.top  - 52;
+        tooltip.style.left = Math.min(x, r.width - 210) + 'px';
+        tooltip.style.top  = Math.max(y, 8) + 'px';
+    })
+    .on('mouseout', () => {
+        tooltip.style.opacity = '0';
+    });
+
+// ================================================================
+// CLICK — HIGHLIGHT DIRECT CONNECTIONS
+// ================================================================
+let selected = null;
+
+nodeSel.on('click', (event, d) => {
+    if (selected === d.id) {
+        selected = null;
+        resetAll();
+        return;
+    }
+    selected = d.id;
+
+    const connected = new Set([d.id]);
+    links.forEach(l => {
+        if (l.s === d.id) connected.add(l.t);
+        if (l.t === d.id) connected.add(l.s);
+    });
+
+    nodeSel.select('circle')
+        .attr('opacity',      n => connected.has(n.id) ? 1 : 0.1)
+        .attr('stroke-width', n => n.id === d.id ? 2.5 : 1.5);
+
+    nodeSel.selectAll('text')
+        .attr('opacity', n => connected.has(n.id) ? 1 : 0.1);
+
+    linkSel
+        .attr('opacity',      l => (l.s === d.id || l.t === d.id) ? 0.9 : 0.05)
+        .attr('stroke-width', l => (l.s === d.id || l.t === d.id) ? 2.5 : 1);
+});
+
+function resetAll() {
+    nodeSel.select('circle')
+        .attr('opacity',      1)
+        .attr('stroke-width', 1.5);
+    nodeSel.selectAll('text').attr('opacity', 1);
+    linkSel
+        .attr('opacity',      0.65)
+        .attr('stroke-width', d => d.type === 'bridge' ? 1 : 1.5);
+}
+
+// ================================================================
+// TOGGLE LOOPS
+// ================================================================
+const state = { food: true, climate: true };
+
+function nodeOn(n) {
+    if (n.loop === 'food')    return state.food;
+    if (n.loop === 'climate') return state.climate;
+    return state.food || state.climate; // bridge nodes stay if either loop is on
+}
+
+function linkOn(l) {
+    if (l.type === 'food')     return state.food;
+    if (l.type === 'climate')  return state.climate;
+    if (l.type === 'feedback') return state.climate;
+    // bridge: only show if both endpoint loops are on
+    return nodeOn(nMap[l.s]) && nodeOn(nMap[l.t]);
+}
+
+function applyVisibility() {
+    nodeSel.select('circle').attr('opacity', n => nodeOn(n) ? 1 : 0.07);
+    nodeSel.selectAll('text').attr('opacity', n => nodeOn(n) ? 1 : 0.07);
+    linkSel.attr('opacity',      l => linkOn(l) ? 0.65 : 0.04);
+}
+
+document.getElementById('btn-food').addEventListener('click', function() {
+    state.food   = !state.food;
+    selected     = null;
+    this.className = 'toggle-btn' + (state.food ? ' on-food' : '');
+    applyVisibility();
+});
+
+document.getElementById('btn-climate').addEventListener('click', function() {
+    state.climate = !state.climate;
+    selected      = null;
+    this.className = 'toggle-btn' + (state.climate ? ' on-climate' : '');
+    applyVisibility();
+});
+</script>
+</body>
+</html>
