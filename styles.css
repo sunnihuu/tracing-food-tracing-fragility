@@ -66,11 +66,12 @@ h1, h2, h3 {
 }
 
 h1 { font-size: clamp(2rem, 4vw, 3rem); }
-h2 { font-size: clamp(1.4rem, 2.8vw, 2rem); }
-h3 { font-size: 1.1rem; font-style: normal; }
+h2 { font-size: clamp(1.1rem, 2vw, 1.5rem); }
+h3 { font-size: 1rem; font-style: normal; }
 
 p {
     font-weight: 400;
+    font-size: 0.875rem;
     margin-bottom: 1.5rem;
     max-width: 65ch;
 }
@@ -126,7 +127,7 @@ section {
     font-family: var(--mono);
     font-size: 0.68rem;
     letter-spacing: 0.18em;
-    color: var(--dim);
+    color: rgba(232, 228, 220, 0.45);
     display: block;
     margin-bottom: 2rem;
 }
