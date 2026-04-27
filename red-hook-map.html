@@ -79,39 +79,6 @@
       max-width: 260px;
     }
 
-    /* ── Legend ──────────────────────────────────────── */
-    #legend {
-      position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      background: rgba(8,12,20,0.92);
-      border: 1px solid rgba(232,228,220,0.12);
-      padding: 0.8rem 1rem;
-      z-index: 10;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: rgba(232,228,220,0.55);
-    }
-    .legend-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.35rem;
-    }
-    .legend-row:last-child { margin-bottom: 0; }
-    .legend-sw {
-      width: 10px;
-      height: 10px;
-      flex-shrink: 0;
-    }
-    .legend-divider {
-      border: none;
-      border-top: 1px solid rgba(232,228,220,0.08);
-      margin: 0.5rem 0;
-    }
-
     /* ── Caption ─────────────────────────────────────── */
     #caption {
       position: fixed;
@@ -153,27 +120,6 @@
     </div>
   </div>
 
-  <div id="legend">
-    <div class="group-label" style="color:rgba(232,228,220,0.3);">Flood</div>
-    <div class="legend-row">
-      <div class="legend-sw" style="background:rgba(74,127,168,0.65);"></div>Sandy Inundation
-    </div>
-    <div class="legend-row">
-      <div class="legend-sw" style="background:rgba(58,95,138,0.55);"></div>Floodplain 2050s
-    </div>
-    <hr class="legend-divider">
-    <div class="group-label" style="color:rgba(232,228,220,0.3);">Land Use</div>
-    <div class="legend-row">
-      <div class="legend-sw" style="background:rgba(139,58,43,0.85);"></div>Industrial
-    </div>
-    <div class="legend-row">
-      <div class="legend-sw" style="background:rgba(139,123,43,0.85);"></div>Residential
-    </div>
-    <div class="legend-row">
-      <div class="legend-sw" style="background:rgba(91,58,139,0.85);"></div>Commercial
-    </div>
-  </div>
-
   <div id="caption">
     // these conditions do not occur separately.<br>
     they occupy the same ground.
@@ -203,23 +149,16 @@
       commercial:  'lu-commercial'
     };
 
-    // Numeric land use codes (NYC PLUTO-style, zero-padded strings)
+    // NYC PLUTO land use codes (zero-padded two-digit strings)
+    const CAT_FIELD = 'LandUse';
     const CODES = {
-      industrial:  ['6','7','06','07'],
-      residential: ['1','2','3','4','01','02','03','04'],
-      commercial:  ['5','05']
+      industrial:  ['06', '07'],
+      residential: ['01', '02', '03', '04'],
+      commercial:  ['05']
     };
 
     function filterExpr(field, codes) {
-      return ['match', ['to-string', ['get', field]], codes, true, false];
-    }
-
-    function guessField(props) {
-      const keys = ['LandUse','landuse','LANDUSE','LUCategory','lu_category',
-                    'category','Category','type','Type','CLASS','class',
-                    'ZoneDist','zonedist','land_use','LAND_USE'];
-      for (const k of keys) if (props[k] !== undefined) return k;
-      return Object.keys(props)[0] || 'LandUse';
+      return ['match', ['get', field], codes, true, false];
     }
 
     // ── Load + build layers ───────────────────────────────────────
@@ -229,13 +168,6 @@
         fetch('data/nyc-sand%20inundation.geojson').then(r => r.json()),
         fetch('data/future%20floodplan.geojson').then(r => r.json())
       ]).then(([landuse, sandy, flood]) => {
-
-        let catField = 'LandUse';
-        if (landuse.features?.length) {
-          catField = guessField(landuse.features[0].properties);
-          console.log('[red-hook-map] land use field:', catField);
-          console.log('[red-hook-map] sample:', landuse.features[0].properties);
-        }
 
         // Sources
         map.addSource('flood-src',   { type: 'geojson', data: flood   });
@@ -265,19 +197,19 @@
         // 3–5. Land Use — top (three filterable sub-layers)
         map.addLayer({
           id: LAYER.industrial, type: 'fill', source: 'lu-src',
-          filter: filterExpr(catField, CODES.industrial),
+          filter: filterExpr(CAT_FIELD, CODES.industrial),
           paint: { 'fill-color': '#8B3A2B', 'fill-opacity': 0.65 }
         });
 
         map.addLayer({
           id: LAYER.residential, type: 'fill', source: 'lu-src',
-          filter: filterExpr(catField, CODES.residential),
+          filter: filterExpr(CAT_FIELD, CODES.residential),
           paint: { 'fill-color': '#8B7B2B', 'fill-opacity': 0.65 }
         });
 
         map.addLayer({
           id: LAYER.commercial, type: 'fill', source: 'lu-src',
-          filter: filterExpr(catField, CODES.commercial),
+          filter: filterExpr(CAT_FIELD, CODES.commercial),
           paint: { 'fill-color': '#5B3A8B', 'fill-opacity': 0.65 }
         });
 
