@@ -13,12 +13,9 @@
       background: #080c14;
       width: 100%;
       height: 100%;
+      overflow: hidden;
     }
-
-    #map {
-      width: 100%;
-      height: 100vh;
-    }
+    #map { width: 100%; height: 100%; }
 
     /* ── Toggle controls ─────────────────────────────── */
     #controls {
@@ -27,16 +24,27 @@
       left: 1.5rem;
       background: rgba(8,12,20,0.92);
       border: 1px solid rgba(232,228,220,0.12);
-      padding: 1rem;
+      padding: 1rem 1.2rem;
       z-index: 10;
     }
-
+    .group-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(232,228,220,0.3);
+      margin-bottom: 0.5rem;
+    }
+    .group-sep {
+      border-top: 1px solid rgba(232,228,220,0.08);
+      margin: 0.7rem 0 0.5rem;
+    }
     .toggle-row {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
+      gap: 0.6rem;
       cursor: pointer;
-      margin-bottom: 0.65rem;
+      margin-bottom: 0.5rem;
       font-family: 'IBM Plex Mono', monospace;
       font-size: 10px;
       letter-spacing: 0.12em;
@@ -47,15 +55,13 @@
     }
     .toggle-row:last-child { margin-bottom: 0; }
     .toggle-row.inactive   { color: rgba(232,228,220,0.3); }
-
-    .dot {
+    .sq {
       width: 8px;
       height: 8px;
-      border-radius: 50%;
       flex-shrink: 0;
       transition: opacity 0.2s;
     }
-    .toggle-row.inactive .dot { opacity: 0.25; }
+    .toggle-row.inactive .sq { opacity: 0.2; }
 
     /* ── Tooltip ─────────────────────────────────────── */
     #tooltip {
@@ -63,14 +69,14 @@
       pointer-events: none;
       font-family: 'IBM Plex Mono', monospace;
       font-size: 11px;
-      color: rgba(232,228,220,0.9);
+      color: rgba(232,228,220,0.85);
       background: #0d1420;
       border: 1px solid rgba(232,228,220,0.15);
-      padding: 0.6rem 0.8rem;
+      padding: 0.7rem 1rem;
       line-height: 1.8;
       display: none;
       z-index: 30;
-      max-width: 230px;
+      max-width: 260px;
     }
 
     /* ── Legend ──────────────────────────────────────── */
@@ -86,7 +92,7 @@
       font-size: 9px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: rgba(232,228,220,0.6);
+      color: rgba(232,228,220,0.55);
     }
     .legend-row {
       display: flex;
@@ -95,7 +101,7 @@
       margin-bottom: 0.35rem;
     }
     .legend-row:last-child { margin-bottom: 0; }
-    .legend-swatch {
+    .legend-sw {
       width: 10px;
       height: 10px;
       flex-shrink: 0;
@@ -103,7 +109,7 @@
     .legend-divider {
       border: none;
       border-top: 1px solid rgba(232,228,220,0.08);
-      margin: 0.45rem 0;
+      margin: 0.5rem 0;
     }
 
     /* ── Caption ─────────────────────────────────────── */
@@ -113,10 +119,11 @@
       right: 1.5rem;
       font-family: 'IBM Plex Mono', monospace;
       font-size: 9px;
-      color: rgba(232,228,220,0.3);
+      color: rgba(232,228,220,0.25);
       z-index: 10;
       line-height: 1.7;
       text-align: right;
+      pointer-events: none;
     }
   </style>
 </head>
@@ -126,36 +133,44 @@
   <div id="tooltip"></div>
 
   <div id="controls">
-    <div class="toggle-row" data-layer="sandy" id="toggle-sandy">
-      <span class="dot" style="background:#4A7FA8;"></span>
-      Sandy Inundation
+    <div class="group-label">Flood</div>
+    <div class="toggle-row" data-key="sandy">
+      <div class="sq" style="background:#4A7FA8;"></div>Sandy Inundation
     </div>
-    <div class="toggle-row" data-layer="flood" id="toggle-flood">
-      <span class="dot" style="background:#2A4E7A;"></span>
-      Floodplain 2050s
+    <div class="toggle-row" data-key="flood">
+      <div class="sq" style="background:#3A5F8A;"></div>Floodplain 2050s
     </div>
-    <div class="toggle-row" data-layer="landuse" id="toggle-landuse">
-      <span class="dot" style="background:#8B3A2B;"></span>
-      Land Use
+    <div class="group-sep"></div>
+    <div class="group-label">Land Use</div>
+    <div class="toggle-row" data-key="industrial">
+      <div class="sq" style="background:#8B3A2B;"></div>Industrial
+    </div>
+    <div class="toggle-row" data-key="residential">
+      <div class="sq" style="background:#8B7B2B;"></div>Residential
+    </div>
+    <div class="toggle-row" data-key="commercial">
+      <div class="sq" style="background:#5B3A8B;"></div>Commercial
     </div>
   </div>
 
   <div id="legend">
+    <div class="group-label" style="color:rgba(232,228,220,0.3);">Flood</div>
     <div class="legend-row">
-      <div class="legend-swatch" style="background:rgba(74,127,168,0.55);"></div>Sandy Inundation
+      <div class="legend-sw" style="background:rgba(74,127,168,0.65);"></div>Sandy Inundation
     </div>
     <div class="legend-row">
-      <div class="legend-swatch" style="background:rgba(42,78,122,0.65);"></div>Floodplain 2050s
+      <div class="legend-sw" style="background:rgba(58,95,138,0.55);"></div>Floodplain 2050s
     </div>
     <hr class="legend-divider">
+    <div class="group-label" style="color:rgba(232,228,220,0.3);">Land Use</div>
     <div class="legend-row">
-      <div class="legend-swatch" style="background:rgba(139,58,43,0.8);"></div>Industrial
+      <div class="legend-sw" style="background:rgba(139,58,43,0.85);"></div>Industrial
     </div>
     <div class="legend-row">
-      <div class="legend-swatch" style="background:rgba(139,123,43,0.8);"></div>Residential
+      <div class="legend-sw" style="background:rgba(139,123,43,0.85);"></div>Residential
     </div>
     <div class="legend-row">
-      <div class="legend-swatch" style="background:rgba(91,58,139,0.8);"></div>Commercial
+      <div class="legend-sw" style="background:rgba(91,58,139,0.85);"></div>Commercial
     </div>
   </div>
 
@@ -174,47 +189,40 @@
       zoom:      14
     });
 
-    const layerState = { sandy: true, flood: true, landuse: true };
+    // ── Layer state ───────────────────────────────────────────────
+    const state = {
+      sandy: true, flood: true,
+      industrial: true, residential: true, commercial: true
+    };
 
-    // ── Land-use category value lists ─────────────────────────────
-    const INDUSTRIAL  = ['industrial','industry','manufacturing','transportation',
-                         'utility','trans & util','06','07','6','7'];
-    const RESIDENTIAL = ['residential','one & two family','multi-family','multi family',
-                         'one family','two family','01','02','03','1','2','3'];
-    const COMMERCIAL  = ['commercial','office','retail',
-                         'mixed residential commercial','04','05','4','5'];
+    const LAYER = {
+      sandy:       'sandy-layer',
+      flood:       'flood-layer',
+      industrial:  'lu-industrial',
+      residential: 'lu-residential',
+      commercial:  'lu-commercial'
+    };
 
-    function colorExpr(field) {
-      return ['match', ['downcase', ['to-string', ['get', field]]],
-        INDUSTRIAL,  '#8B3A2B',
-        RESIDENTIAL, '#8B7B2B',
-        COMMERCIAL,  '#5B3A8B',
-        '#444444'
-      ];
+    // Numeric land use codes (NYC PLUTO-style, zero-padded strings)
+    const CODES = {
+      industrial:  ['6','7','06','07'],
+      residential: ['1','2','3','4','01','02','03','04'],
+      commercial:  ['5','05']
+    };
+
+    function filterExpr(field, codes) {
+      return ['match', ['to-string', ['get', field]], codes, true, false];
     }
 
-    function opacityExpr(field) {
-      return ['match', ['downcase', ['to-string', ['get', field]]],
-        [...INDUSTRIAL, ...RESIDENTIAL, ...COMMERCIAL], 0.6,
-        0.2
-      ];
+    function guessField(props) {
+      const keys = ['LandUse','landuse','LANDUSE','LUCategory','lu_category',
+                    'category','Category','type','Type','CLASS','class',
+                    'ZoneDist','zonedist','land_use','LAND_USE'];
+      for (const k of keys) if (props[k] !== undefined) return k;
+      return Object.keys(props)[0] || 'LandUse';
     }
 
-    // Detect which property holds the land-use category
-    function detectField(feature) {
-      const props = feature.properties;
-      const candidates = [
-        'LandUse','landuse','LANDUSE','LUCategory','lu_category',
-        'category','Category','CATEGORY','type','Type','TYPE',
-        'CLASS','class','ZoneDist','zonedist','land_use','LAND_USE'
-      ];
-      for (const c of candidates) {
-        if (props[c] !== undefined) return c;
-      }
-      return Object.keys(props)[0] || 'landuse';
-    }
-
-    // ── Load data and add layers ──────────────────────────────────
+    // ── Load + build layers ───────────────────────────────────────
     map.on('load', () => {
       Promise.all([
         fetch('data/red%20hook-landuse.geojson').then(r => r.json()),
@@ -222,63 +230,72 @@
         fetch('data/future%20floodplan.geojson').then(r => r.json())
       ]).then(([landuse, sandy, flood]) => {
 
-        let catField = 'landuse';
+        let catField = 'LandUse';
         if (landuse.features?.length) {
-          catField = detectField(landuse.features[0]);
-          console.log('[red-hook-map] land use field:', catField,
-                      '| sample:', landuse.features[0].properties);
+          catField = guessField(landuse.features[0].properties);
+          console.log('[red-hook-map] land use field:', catField);
+          console.log('[red-hook-map] sample:', landuse.features[0].properties);
         }
 
         // Sources
-        map.addSource('sandy-src',   { type: 'geojson', data: sandy   });
         map.addSource('flood-src',   { type: 'geojson', data: flood   });
-        map.addSource('landuse-src', { type: 'geojson', data: landuse });
+        map.addSource('sandy-src',   { type: 'geojson', data: sandy   });
+        map.addSource('lu-src',      { type: 'geojson', data: landuse });
 
-        // 1. Sandy Inundation (bottom)
+        // 1. Floodplain 2050s — bottom
         map.addLayer({
-          id: 'sandy-layer', type: 'fill', source: 'sandy-src',
+          id: LAYER.flood, type: 'fill', source: 'flood-src',
+          paint: {
+            'fill-color':         '#3A5F8A',
+            'fill-opacity':        0.35,
+            'fill-outline-color': 'rgba(58,95,138,0.6)'
+          }
+        });
+
+        // 2. Sandy Inundation — middle
+        map.addLayer({
+          id: LAYER.sandy, type: 'fill', source: 'sandy-src',
           paint: {
             'fill-color':         '#4A7FA8',
-            'fill-opacity':        0.3,
-            'fill-outline-color': 'rgba(74,127,168,0.5)'
+            'fill-opacity':        0.5,
+            'fill-outline-color': 'rgba(74,127,168,0.7)'
           }
         });
 
-        // 2. Floodplain 2050s (middle)
+        // 3–5. Land Use — top (three filterable sub-layers)
         map.addLayer({
-          id: 'flood-layer', type: 'fill', source: 'flood-src',
-          paint: {
-            'fill-color':         '#2A4E7A',
-            'fill-opacity':        0.4,
-            'fill-outline-color': 'rgba(42,78,122,0.7)'
-          }
+          id: LAYER.industrial, type: 'fill', source: 'lu-src',
+          filter: filterExpr(catField, CODES.industrial),
+          paint: { 'fill-color': '#8B3A2B', 'fill-opacity': 0.65 }
         });
 
-        // 3. Land Use (top)
         map.addLayer({
-          id: 'landuse-layer', type: 'fill', source: 'landuse-src',
-          paint: {
-            'fill-color':   colorExpr(catField),
-            'fill-opacity': opacityExpr(catField)
-          }
+          id: LAYER.residential, type: 'fill', source: 'lu-src',
+          filter: filterExpr(catField, CODES.residential),
+          paint: { 'fill-color': '#8B7B2B', 'fill-opacity': 0.65 }
+        });
+
+        map.addLayer({
+          id: LAYER.commercial, type: 'fill', source: 'lu-src',
+          filter: filterExpr(catField, CODES.commercial),
+          paint: { 'fill-color': '#5B3A8B', 'fill-opacity': 0.65 }
         });
 
         initToggles();
-        initTooltip(catField);
+        initTooltip();
 
-      }).catch(err => console.error('[red-hook-map] load error:', err));
+      }).catch(err => console.error('[red-hook-map]', err));
     });
 
     // ── Toggles ───────────────────────────────────────────────────
     function initToggles() {
-      const ids = { sandy: 'sandy-layer', flood: 'flood-layer', landuse: 'landuse-layer' };
       document.querySelectorAll('.toggle-row').forEach(row => {
         row.addEventListener('click', () => {
-          const key = row.dataset.layer;
-          layerState[key] = !layerState[key];
-          map.setLayoutProperty(ids[key], 'visibility',
-            layerState[key] ? 'visible' : 'none');
-          row.classList.toggle('inactive', !layerState[key]);
+          const key = row.dataset.key;
+          state[key] = !state[key];
+          map.setLayoutProperty(LAYER[key], 'visibility',
+            state[key] ? 'visible' : 'none');
+          row.classList.toggle('inactive', !state[key]);
         });
       });
     }
@@ -286,47 +303,45 @@
     // ── Tooltip ───────────────────────────────────────────────────
     const tooltip = document.getElementById('tooltip');
 
-    function initTooltip(catField) {
+    function initTooltip() {
       map.on('mousemove', e => {
         const pt = e.point;
-        const sandyF   = layerState.sandy   ? map.queryRenderedFeatures(pt, { layers: ['sandy-layer']   }) : [];
-        const floodF   = layerState.flood   ? map.queryRenderedFeatures(pt, { layers: ['flood-layer']   }) : [];
-        const landuseF = layerState.landuse ? map.queryRenderedFeatures(pt, { layers: ['landuse-layer'] }) : [];
 
-        if (!sandyF.length && !floodF.length && !landuseF.length) {
+        const indF  = state.industrial  ? map.queryRenderedFeatures(pt, { layers: [LAYER.industrial]  }) : [];
+        const resF  = state.residential ? map.queryRenderedFeatures(pt, { layers: [LAYER.residential] }) : [];
+        const comF  = state.commercial  ? map.queryRenderedFeatures(pt, { layers: [LAYER.commercial]  }) : [];
+        const sndF  = state.sandy       ? map.queryRenderedFeatures(pt, { layers: [LAYER.sandy]       }) : [];
+        const fldF  = state.flood       ? map.queryRenderedFeatures(pt, { layers: [LAYER.flood]       }) : [];
+
+        if (!indF.length && !resF.length && !comF.length && !sndF.length && !fldF.length) {
           tooltip.style.display = 'none';
           return;
         }
 
         const lines = [];
 
-        if (landuseF.length) {
-          const val = landuseF[0].properties[catField] || '';
-          if (sandyF.length && floodF.length) {
-            lines.push(`// ${val || 'land use'}`);
-            lines.push('// within sandy inundation');
-            lines.push('// within 2050s floodplain');
-          } else if (sandyF.length) {
-            lines.push(`// ${val || 'land use'}`);
-            lines.push('// within sandy inundation');
-          } else if (floodF.length) {
-            lines.push(`// ${val || 'land use'}`);
-            lines.push('// 2050s floodplain only');
-          } else {
-            lines.push(`// ${val || 'land use'}`);
-          }
-        } else if (sandyF.length && floodF.length) {
-          lines.push('// sandy + 2050s overlap');
-        } else if (sandyF.length) {
-          lines.push('// within sandy inundation');
-        } else if (floodF.length) {
-          lines.push('// 2050s floodplain only');
+        // Land use
+        if (indF.length)  lines.push('// Industrial');
+        if (resF.length)  lines.push('// Residential');
+        if (comF.length)  lines.push('// Commercial');
+
+        // Flood exposure
+        if (sndF.length && fldF.length) {
+          lines.push('// sandy inundation + floodplain 2050s');
+        } else if (sndF.length) {
+          lines.push('// sandy inundation zone');
+        } else if (fldF.length) {
+          lines.push('// floodplain 2050s');
+        } else {
+          lines.push('// no flood exposure');
         }
 
-        tooltip.innerHTML  = lines.join('<br>');
+        lines.push('// these conditions occupy the same ground');
+
+        tooltip.innerHTML     = lines.join('<br>');
         tooltip.style.display = 'block';
-        tooltip.style.left = (e.originalEvent.clientX + 14) + 'px';
-        tooltip.style.top  = (e.originalEvent.clientY  - 10) + 'px';
+        tooltip.style.left    = (e.originalEvent.clientX + 14) + 'px';
+        tooltip.style.top     = (e.originalEvent.clientY  - 10) + 'px';
       });
 
       map.getCanvas().addEventListener('mouseleave', () => {
