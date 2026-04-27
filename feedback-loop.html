@@ -38,12 +38,14 @@
 
         .toggle-btn {
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             letter-spacing: 0.12em;
-            padding: 5px 12px;
-            border: 1px solid rgba(232, 228, 220, 0.18);
-            background: rgba(8, 12, 20, 0.85);
-            color: rgba(232, 228, 220, 0.35);
+            text-transform: uppercase;
+            padding: 0.5rem 1.2rem;
+            border-radius: 0;
+            border: 1px solid rgba(232, 228, 220, 0.2);
+            background: transparent;
+            color: rgba(232, 228, 220, 0.3);
             cursor: pointer;
             transition: border-color 0.2s, color 0.2s;
         }
@@ -59,27 +61,30 @@
             z-index: 10;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 7px;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 7px;
-            font-size: 0.57rem;
-            letter-spacing: 0.1em;
-            color: rgba(232, 228, 220, 0.38);
+            gap: 8px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.08em;
+            color: rgba(232, 228, 220, 0.55);
+            transition: opacity 0.25s;
         }
 
-        .l-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
+        .legend-item.inactive { opacity: 0.2; }
+
+        .l-line {
+            width: 20px;
+            height: 1.5px;
             flex-shrink: 0;
         }
 
         .l-dash {
-            width: 18px;
+            width: 20px;
             height: 1px;
             flex-shrink: 0;
         }
@@ -94,14 +99,16 @@
             opacity: 0;
             transition: opacity 0.15s;
             z-index: 20;
-            max-width: 195px;
+            max-width: 200px;
         }
 
         .tt-name {
+            font-family: 'IBM Plex Mono', monospace;
             font-size: 0.6rem;
             letter-spacing: 0.12em;
+            text-transform: uppercase;
             color: #e8e4dc;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
 
         .tt-desc {
@@ -122,20 +129,20 @@
     </div>
 
     <div class="legend">
-        <div class="legend-item">
-            <div class="l-dot" style="background:#3a9e8a"></div>
+        <div class="legend-item" id="legend-food">
+            <div class="l-line" style="background:#3a9e8a"></div>
             Food System Loop
         </div>
-        <div class="legend-item">
-            <div class="l-dot" style="background:#e05555"></div>
+        <div class="legend-item" id="legend-climate">
+            <div class="l-line" style="background:#e05555"></div>
             Climate Loop
         </div>
         <div class="legend-item">
-            <div class="l-dash" style="background:repeating-linear-gradient(90deg,#888 0,#888 4px,transparent 4px,transparent 7px)"></div>
+            <div class="l-dash" style="background:repeating-linear-gradient(90deg,rgba(136,136,136,0.7) 0,rgba(136,136,136,0.7) 6px,transparent 6px,transparent 10px)"></div>
             System Bridge
         </div>
         <div class="legend-item">
-            <div class="l-dash" style="background:repeating-linear-gradient(90deg,#d4a030 0,#d4a030 4px,transparent 4px,transparent 7px)"></div>
+            <div class="l-dash" style="background:repeating-linear-gradient(90deg,#d4a030 0,#d4a030 6px,transparent 6px,transparent 10px)"></div>
             Feedback
         </div>
     </div>
@@ -152,17 +159,15 @@
 // ================================================================
 // LAYOUT CONSTANTS
 // ================================================================
-const W = 900, H = 470;
-const NODE_R = 20;
+const W = 1100, H = 600;
+const NODE_R = 36;
 
 const RAD = deg => deg * Math.PI / 180;
 
-// Food system loop: center (215, 238), radius 140
-const FX = 215, FY = 238, FR = 140;
+const FX = 265, FY = 300, FR = 165;
 const fp = deg => ({ x: FX + FR * Math.cos(RAD(deg)), y: FY + FR * Math.sin(RAD(deg)) });
 
-// Climate loop: center (685, 238), radius 140
-const CX = 685, CY = 238, CR = 140;
+const CX = 835, CY = 300, CR = 165;
 const cp = deg => ({ x: CX + CR * Math.cos(RAD(deg)), y: CY + CR * Math.sin(RAD(deg)) });
 
 // ================================================================
@@ -184,49 +189,47 @@ const TIPS = {
 };
 
 const nodes = [
-    // Food system loop — clockwise from top
-    { id: 'production',          label: 'Production',          loop: 'food',    color: '#3a9e8a', ...fp(-90)  },
-    { id: 'processing',          label: 'Processing',          loop: 'food',    color: '#3a9e8a', ...fp(-30)  },
-    { id: 'transport',           label: 'Transport',           loop: 'bridge',  color: '#888888', ...fp(30)   },
-    { id: 'retail',              label: 'Retail',              loop: 'food',    color: '#3a9e8a', ...fp(90)   },
-    { id: 'consumption',         label: 'Consumption',         loop: 'food',    color: '#3a9e8a', ...fp(150)  },
-    { id: 'waste',               label: 'Waste',               loop: 'food',    color: '#3a9e8a', ...fp(210)  },
-    // Climate loop — clockwise from top
-    { id: 'climate_change',      label: 'Climate Change',      loop: 'climate', color: '#e05555', ...cp(-90)  },
-    { id: 'extreme_weather',     label: 'Extreme Weather',     loop: 'climate', color: '#e05555', ...cp(-30)  },
-    { id: 'reduced_yields',      label: 'Reduced Yields',      loop: 'climate', color: '#e05555', ...cp(30)   },
-    { id: 'urban_shortages',     label: 'Urban Food Shortages',loop: 'climate', color: '#e05555', ...cp(90)   },
-    { id: 'system_expansion',    label: 'System Expansion',    loop: 'bridge',  color: '#d4a030', ...cp(150)  },
-    { id: 'high_emissions',      label: 'High Emissions',      loop: 'climate', color: '#e05555', ...cp(210)  },
+    { id: 'production',       label: 'Production',          loop: 'food',    color: '#3a9e8a', ...fp(-90)  },
+    { id: 'processing',       label: 'Processing',          loop: 'food',    color: '#3a9e8a', ...fp(-30)  },
+    { id: 'transport',        label: 'Transport',           loop: 'bridge',  color: '#888888', ...fp(30)   },
+    { id: 'retail',           label: 'Retail',              loop: 'food',    color: '#3a9e8a', ...fp(90)   },
+    { id: 'consumption',      label: 'Consumption',         loop: 'food',    color: '#3a9e8a', ...fp(150)  },
+    { id: 'waste',            label: 'Waste',               loop: 'food',    color: '#3a9e8a', ...fp(210)  },
+    { id: 'climate_change',   label: 'Climate Change',      loop: 'climate', color: '#e05555', ...cp(-90)  },
+    { id: 'extreme_weather',  label: 'Extreme Weather',     loop: 'climate', color: '#e05555', ...cp(-30)  },
+    { id: 'reduced_yields',   label: 'Reduced Yields',      loop: 'climate', color: '#e05555', ...cp(30)   },
+    { id: 'urban_shortages',  label: 'Urban Food Shortages',loop: 'climate', color: '#e05555', ...cp(90)   },
+    { id: 'system_expansion', label: 'System Expansion',    loop: 'bridge',  color: '#d4a030', ...cp(150)  },
+    { id: 'high_emissions',   label: 'High Emissions',      loop: 'climate', color: '#e05555', ...cp(210)  },
 ];
 
 const links = [
-    // Food loop (solid teal)
-    { s: 'production',        t: 'processing',        type: 'food',     dash: false },
-    { s: 'processing',        t: 'transport',         type: 'food',     dash: false },
-    { s: 'transport',         t: 'retail',            type: 'food',     dash: false },
-    { s: 'retail',            t: 'consumption',       type: 'food',     dash: false },
-    { s: 'consumption',       t: 'waste',             type: 'food',     dash: false },
-    { s: 'waste',             t: 'production',        type: 'food',     dash: false },
-    // Climate loop (solid red)
-    { s: 'climate_change',    t: 'extreme_weather',   type: 'climate',  dash: false },
-    { s: 'extreme_weather',   t: 'reduced_yields',    type: 'climate',  dash: false },
-    { s: 'reduced_yields',    t: 'urban_shortages',   type: 'climate',  dash: false },
-    { s: 'urban_shortages',   t: 'system_expansion',  type: 'climate',  dash: false },
-    { s: 'system_expansion',  t: 'high_emissions',    type: 'climate',  dash: false },
-    // Feedback — closes climate loop, dashed gold
-    { s: 'high_emissions',    t: 'climate_change',    type: 'feedback', dash: true  },
-    // System bridges (dashed grey)
-    { s: 'production',        t: 'climate_change',    type: 'bridge',   dash: true  },
-    { s: 'transport',         t: 'urban_shortages',   type: 'bridge',   dash: true  },
-    { s: 'high_emissions',    t: 'production',        type: 'bridge',   dash: true  },
-    { s: 'system_expansion',  t: 'retail',            type: 'bridge',   dash: true  },
+    // Food loop — solid teal
+    { s: 'production',       t: 'processing',       type: 'food',     dash: false },
+    { s: 'processing',       t: 'transport',        type: 'food',     dash: false },
+    { s: 'transport',        t: 'retail',           type: 'food',     dash: false },
+    { s: 'retail',           t: 'consumption',      type: 'food',     dash: false },
+    { s: 'consumption',      t: 'waste',            type: 'food',     dash: false },
+    { s: 'waste',            t: 'production',       type: 'food',     dash: false },
+    // Climate loop — solid red
+    { s: 'climate_change',   t: 'extreme_weather',  type: 'climate',  dash: false },
+    { s: 'extreme_weather',  t: 'reduced_yields',   type: 'climate',  dash: false },
+    { s: 'reduced_yields',   t: 'urban_shortages',  type: 'climate',  dash: false },
+    { s: 'urban_shortages',  t: 'system_expansion', type: 'climate',  dash: false },
+    { s: 'system_expansion', t: 'high_emissions',   type: 'climate',  dash: false },
+    // Feedback — dashed gold, closes climate loop
+    { s: 'high_emissions',   t: 'climate_change',   type: 'feedback', dash: true  },
+    // System bridges — dashed grey
+    { s: 'production',       t: 'climate_change',   type: 'bridge',   dash: true  },
+    { s: 'transport',        t: 'urban_shortages',  type: 'bridge',   dash: true  },
+    { s: 'high_emissions',   t: 'production',       type: 'bridge',   dash: true  },
+    { s: 'system_expansion', t: 'retail',           type: 'bridge',   dash: true  },
 ];
 
 const COLORS = {
     food:     '#3a9e8a',
     climate:  '#e05555',
-    bridge:   'rgba(136,136,136,0.5)',
+    bridge:   'rgba(136,136,136,0.55)',
     feedback: '#d4a030',
 };
 
@@ -237,18 +240,19 @@ const svg = d3.select('#wrap').append('svg')
     .attr('viewBox', `0 0 ${W} ${H}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
-// Arrow markers — one per link type
-const defs = svg.append('defs');
+svg.append('rect').attr('width', W).attr('height', H).attr('fill', '#080c14');
 
+// Arrow markers
+const defs = svg.append('defs');
 Object.entries(COLORS).forEach(([type, color]) => {
     defs.append('marker')
-        .attr('id',          `arr-${type}`)
-        .attr('viewBox',     '0 -5 10 10')
-        .attr('refX',        9)
-        .attr('refY',        0)
-        .attr('markerWidth', 5)
-        .attr('markerHeight',5)
-        .attr('orient',      'auto')
+        .attr('id',           `arr-${type}`)
+        .attr('viewBox',      '0 -5 10 10')
+        .attr('refX',         9)
+        .attr('refY',         0)
+        .attr('markerWidth',  5)
+        .attr('markerHeight', 5)
+        .attr('orient',       'auto')
         .append('path')
         .attr('d',    'M0,-5L10,0L0,5')
         .attr('fill', color);
@@ -259,12 +263,11 @@ Object.entries(COLORS).forEach(([type, color]) => {
 // ================================================================
 const nMap = Object.fromEntries(nodes.map(n => [n.id, n]));
 
-// Shorten line so it ends at circle edge, not node center
 function edgeCoords(d) {
     const s = nMap[d.s], t = nMap[d.t];
     const dx = t.x - s.x, dy = t.y - s.y;
     const len = Math.sqrt(dx * dx + dy * dy);
-    const pad = NODE_R + 3;
+    const pad = NODE_R + 4;
     return {
         x1: s.x + (dx / len) * pad,
         y1: s.y + (dy / len) * pad,
@@ -273,7 +276,6 @@ function edgeCoords(d) {
     };
 }
 
-// Wrap label into lines that fit roughly inside node diameter
 function wrapLabel(label) {
     const words = label.split(' ');
     if (words.length === 1) return [label];
@@ -296,7 +298,7 @@ const linkSel = svg.append('g').attr('class', 'links')
     })
     .attr('stroke',           d => COLORS[d.type])
     .attr('stroke-width',     d => d.type === 'bridge' ? 1 : 1.5)
-    .attr('stroke-dasharray', d => d.dash ? '5 4' : 'none')
+    .attr('stroke-dasharray', d => d.dash ? '6 4' : 'none')
     .attr('opacity',          0.65)
     .attr('marker-end',       d => `url(#arr-${d.type})`);
 
@@ -310,27 +312,70 @@ const nodeSel = svg.append('g').attr('class', 'nodes')
     .attr('transform', d => `translate(${d.x},${d.y})`)
     .style('cursor', 'pointer');
 
-nodeSel.append('circle')
-    .attr('r',            NODE_R)
-    .attr('fill',         d => d.color + '18')
-    .attr('stroke',       d => d.color)
-    .attr('stroke-width', 1.5);
+// Shape per node type
+nodeSel.each(function(d) {
+    const g = d3.select(this);
 
-// Labels — split into two lines if needed
+    if (d.id === 'system_expansion') {
+        // Diamond
+        const s = 30;
+        g.append('polygon')
+            .attr('class',        'node-shape')
+            .attr('points',       `0,${-s} ${s},0 0,${s} ${-s},0`)
+            .attr('fill',         d.color + '28')
+            .attr('stroke',       d.color)
+            .attr('stroke-width', 1.5);
+
+    } else if (d.id === 'transport') {
+        // Dual ring: outer red, inner teal
+        g.append('circle')
+            .attr('r',            NODE_R + 8)
+            .attr('fill',         'none')
+            .attr('stroke',       '#e05555')
+            .attr('stroke-width', 1)
+            .attr('opacity',      0.5);
+        g.append('circle')
+            .attr('class',        'node-shape')
+            .attr('r',            NODE_R)
+            .attr('fill',         '#3a9e8a18')
+            .attr('stroke',       '#3a9e8a')
+            .attr('stroke-width', 1.5);
+
+    } else if (d.loop === 'climate') {
+        // Hollow circle — red stroke, no fill
+        g.append('circle')
+            .attr('class',        'node-shape')
+            .attr('r',            NODE_R)
+            .attr('fill',         'none')
+            .attr('stroke',       d.color)
+            .attr('stroke-width', 1.5);
+
+    } else {
+        // Food nodes — teal fill, slightly transparent
+        g.append('circle')
+            .attr('class',        'node-shape')
+            .attr('r',            NODE_R)
+            .attr('fill',         d.color + '28')
+            .attr('stroke',       d.color)
+            .attr('stroke-width', 1.5);
+    }
+});
+
+// Labels
 nodeSel.each(function(d) {
     const lines  = wrapLabel(d.label);
-    const lineH  = 11;
+    const lineH  = 13;
     const startY = -(lines.length - 1) * lineH / 2;
     const g      = d3.select(this);
 
     lines.forEach((line, i) => {
         g.append('text')
-            .attr('text-anchor',  'middle')
-            .attr('y',            startY + i * lineH)
-            .attr('dy',           '0.35em')
-            .attr('fill',         '#e8e4dc')
-            .attr('font-family',  "'IBM Plex Mono', monospace")
-            .attr('font-size',    '8px')
+            .attr('text-anchor',    'middle')
+            .attr('y',              startY + i * lineH)
+            .attr('dy',             '0.35em')
+            .attr('fill',           '#e8e4dc')
+            .attr('font-family',    "'IBM Plex Mono', monospace")
+            .attr('font-size',      '11px')
             .attr('pointer-events', 'none')
             .text(line);
     });
@@ -354,7 +399,7 @@ nodeSel
         const r = wrap.getBoundingClientRect();
         const x = event.clientX - r.left + 16;
         const y = event.clientY - r.top  - 52;
-        tooltip.style.left = Math.min(x, r.width - 210) + 'px';
+        tooltip.style.left = Math.min(x, r.width - 215) + 'px';
         tooltip.style.top  = Math.max(y, 8) + 'px';
     })
     .on('mouseout', () => {
@@ -380,23 +425,19 @@ nodeSel.on('click', (event, d) => {
         if (l.t === d.id) connected.add(l.s);
     });
 
-    nodeSel.select('circle')
-        .attr('opacity',      n => connected.has(n.id) ? 1 : 0.1)
-        .attr('stroke-width', n => n.id === d.id ? 2.5 : 1.5);
-
-    nodeSel.selectAll('text')
-        .attr('opacity', n => connected.has(n.id) ? 1 : 0.1);
+    nodeSel.attr('opacity', n => connected.has(n.id) ? 1 : 0.08);
+    nodeSel.filter(n => n.id === d.id)
+        .select('.node-shape')
+        .attr('stroke-width', 2.5);
 
     linkSel
-        .attr('opacity',      l => (l.s === d.id || l.t === d.id) ? 0.9 : 0.05)
+        .attr('opacity',      l => (l.s === d.id || l.t === d.id) ? 0.9 : 0.04)
         .attr('stroke-width', l => (l.s === d.id || l.t === d.id) ? 2.5 : 1);
 });
 
 function resetAll() {
-    nodeSel.select('circle')
-        .attr('opacity',      1)
-        .attr('stroke-width', 1.5);
-    nodeSel.selectAll('text').attr('opacity', 1);
+    nodeSel.attr('opacity', 1);
+    nodeSel.select('.node-shape').attr('stroke-width', 1.5);
     linkSel
         .attr('opacity',      0.65)
         .attr('stroke-width', d => d.type === 'bridge' ? 1 : 1.5);
@@ -410,26 +451,27 @@ const state = { food: true, climate: true };
 function nodeOn(n) {
     if (n.loop === 'food')    return state.food;
     if (n.loop === 'climate') return state.climate;
-    return state.food || state.climate; // bridge nodes stay if either loop is on
+    return state.food || state.climate;
 }
 
 function linkOn(l) {
     if (l.type === 'food')     return state.food;
     if (l.type === 'climate')  return state.climate;
     if (l.type === 'feedback') return state.climate;
-    // bridge: only show if both endpoint loops are on
     return nodeOn(nMap[l.s]) && nodeOn(nMap[l.t]);
 }
 
 function applyVisibility() {
-    nodeSel.select('circle').attr('opacity', n => nodeOn(n) ? 1 : 0.07);
-    nodeSel.selectAll('text').attr('opacity', n => nodeOn(n) ? 1 : 0.07);
-    linkSel.attr('opacity',      l => linkOn(l) ? 0.65 : 0.04);
+    nodeSel.attr('opacity', n => nodeOn(n) ? 1 : 0.06);
+    linkSel.attr('opacity', l => linkOn(l) ? 0.65 : 0.04);
+
+    document.getElementById('legend-food').classList.toggle('inactive',    !state.food);
+    document.getElementById('legend-climate').classList.toggle('inactive', !state.climate);
 }
 
 document.getElementById('btn-food').addEventListener('click', function() {
-    state.food   = !state.food;
-    selected     = null;
+    state.food = !state.food;
+    selected   = null;
     this.className = 'toggle-btn' + (state.food ? ' on-food' : '');
     applyVisibility();
 });
