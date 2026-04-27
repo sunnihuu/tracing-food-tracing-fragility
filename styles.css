@@ -946,3 +946,13 @@ footer p {
 
     .lib-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ── Photo mosaic (Investigative Aesthetics) ──────────── */
+.mosaic-cell {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+}
