@@ -8,6 +8,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Esteban&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.163.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.163.0/examples/jsm/"
+        }
+    }
+    </script>
 </head>
 <body>
 
@@ -278,19 +286,14 @@
         ===============================================================-->
         <section id="limits" style="position: relative; width: 100%; height: 100vh; overflow: hidden;">
 
-            <!-- Background: Polycam 3D model — fully interactive -->
-            <iframe
-                src="https://poly.cam/capture/C55E1432-FC43-4BCD-9FCF-749EDF75D044/embed"
-                title="Polycam capture viewer"
-                frameborder="0"
-                style="position: absolute; inset: 0; width: 100%; height: 100%; border: none; z-index: 0;">
-            </iframe>
+            <!-- Background: Three.js 3D scan — Loading Dock photogrammetry -->
+            <canvas id="limits-canvas" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0;"></canvas>
 
             <!-- Subtle dark overlay -->
             <div style="position: absolute; inset: 0; background: rgba(8,12,20,0.45); z-index: 1; pointer-events: none;"></div>
 
-            <!-- Text — bottom left, pointer-events: none so clicks pass through to 3D model -->
-            <div style="position: absolute; bottom: 2.5rem; left: 2.5rem; z-index: 2; pointer-events: none; max-width: 540px;">
+            <!-- Text — matches section padding: 8rem 5% -->
+            <div style="position: absolute; bottom: 8rem; left: 5%; right: 5%; z-index: 2; pointer-events: none; max-width: 560px;">
                 <div class="fade-in">
                     <h2>The Limits of Representation</h2>
                     <p>Not all of the food system can be fully represented, and the project does not try to.</p>
@@ -539,6 +542,80 @@
         }, { passive: true });
 
     });
+    </script>
+
+    <!-- Three.js — Loading Dock photogrammetry background -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { OBJLoader }      from 'three/addons/loaders/OBJLoader.js';
+        import { MTLLoader }      from 'three/addons/loaders/MTLLoader.js';
+        import { OrbitControls }  from 'three/addons/controls/OrbitControls.js';
+
+        const section  = document.getElementById('limits');
+        const canvas   = document.getElementById('limits-canvas');
+
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(section.offsetWidth, section.offsetHeight);
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+        const scene  = new THREE.Scene();
+        scene.background = new THREE.Color(0x080c14);
+        scene.fog = new THREE.Fog(0x080c14, 18, 35);
+
+        const camera = new THREE.PerspectiveCamera(45, section.offsetWidth / section.offsetHeight, 0.1, 200);
+        camera.position.set(0, 1.5, 10);
+
+        // Lighting — ambient + warm fill to match dark site palette
+        scene.add(new THREE.AmbientLight(0xffffff, 1.4));
+        const hemi = new THREE.HemisphereLight(0xe8e4dc, 0x080c14, 0.6);
+        scene.add(hemi);
+
+        // Orbit controls — auto-rotate, no zoom/pan so scroll still works
+        const controls = new OrbitControls(camera, canvas);
+        controls.enableDamping   = true;
+        controls.dampingFactor   = 0.04;
+        controls.autoRotate      = true;
+        controls.autoRotateSpeed = 0.35;
+        controls.enableZoom      = false;
+        controls.enablePan       = false;
+        controls.minPolarAngle   = Math.PI * 0.3;
+        controls.maxPolarAngle   = Math.PI * 0.65;
+
+        // Load OBJ + MTL
+        const base = 'scans/Loading%20Dock/';
+        const mtlLoader = new MTLLoader();
+        mtlLoader.setPath(base);
+        mtlLoader.load('3_1_2026%20(1).mtl', materials => {
+            materials.preload();
+            const objLoader = new OBJLoader();
+            objLoader.setMaterials(materials);
+            objLoader.setPath(base);
+            objLoader.load('3_1_2026%20(1).obj', obj => {
+                // Centre and fit to view
+                const box    = new THREE.Box3().setFromObject(obj);
+                const centre = box.getCenter(new THREE.Vector3());
+                const size   = box.getSize(new THREE.Vector3());
+                const scale  = 8 / Math.max(size.x, size.y, size.z);
+                obj.scale.setScalar(scale);
+                obj.position.sub(centre.multiplyScalar(scale));
+                scene.add(obj);
+            });
+        });
+
+        // Keep canvas filling the section on resize
+        const ro = new ResizeObserver(() => {
+            renderer.setSize(section.offsetWidth, section.offsetHeight);
+            camera.aspect = section.offsetWidth / section.offsetHeight;
+            camera.updateProjectionMatrix();
+        });
+        ro.observe(section);
+
+        (function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        })();
     </script>
 
 </body>
