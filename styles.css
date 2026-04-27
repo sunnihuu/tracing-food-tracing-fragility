@@ -773,6 +773,12 @@ footer p {
     margin-top: 1.2em;
 }
 
+.closing-final-p {
+    margin-top: 2.5rem;
+    font-weight: 400;
+    font-size: 0.875rem;
+}
+
 .closing-finale {
     margin-top: 5rem;
     text-align: center;
