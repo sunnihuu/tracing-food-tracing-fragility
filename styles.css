@@ -579,6 +579,7 @@ details.data-panel summary:hover { color: var(--text); }
     justify-content: center;
     margin-bottom: 0.9rem;
     position: relative;
+    overflow: hidden;
 }
 
 .book-cover::before {
@@ -586,8 +587,9 @@ details.data-panel summary:hover { color: var(--text); }
     position: absolute;
     top: 5px; left: 5px;
     width: 8px; height: 8px;
-    border-top: 1px solid rgba(200,205,214,0.18);
-    border-left: 1px solid rgba(200,205,214,0.18);
+    border-top: 1px solid rgba(200,205,214,0.25);
+    border-left: 1px solid rgba(200,205,214,0.25);
+    z-index: 3;
 }
 
 .book-cover::after {
@@ -595,15 +597,62 @@ details.data-panel summary:hover { color: var(--text); }
     position: absolute;
     bottom: 5px; right: 5px;
     width: 8px; height: 8px;
-    border-bottom: 1px solid rgba(200,205,214,0.18);
-    border-right: 1px solid rgba(200,205,214,0.18);
+    border-bottom: 1px solid rgba(200,205,214,0.25);
+    border-right: 1px solid rgba(200,205,214,0.25);
+    z-index: 3;
+}
+
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.45s ease, filter 0.45s ease;
+}
+
+.book-card:hover .book-cover img {
+    transform: scale(1.04);
+    filter: brightness(1.1);
 }
 
 .book-cover-label {
     font-family: var(--mono);
-    font-size: 0.58rem;
-    color: rgba(200, 205, 214, 0.22);
+    font-size: 0.55rem;
+    color: rgba(200, 205, 214, 0.18);
     letter-spacing: 0.1em;
+    z-index: 1;
+}
+
+.book-annotations {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 12, 20, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.7rem;
+    padding: 1.1rem 1rem;
+    opacity: 0;
+    transition: opacity 0.35s ease 0.06s;
+    z-index: 2;
+}
+
+.book-card:hover .book-annotations {
+    opacity: 1;
+}
+
+.annotation-line {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.57rem;
+    line-height: 1.6;
+    color: rgba(232, 228, 220, 0.65);
+    letter-spacing: 0.03em;
+}
+
+.annotation-line::before {
+    content: '→ ';
+    color: var(--pink);
 }
 
 .book-title {
@@ -711,6 +760,158 @@ footer p {
 }
 
 /* ================================================================
+   CLOSING SECTION
+================================================================ */
+.stmt-isolated {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.4rem;
+    line-height: 1.4;
+    color: var(--text);
+    opacity: 0.9;
+    max-width: 600px;
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+    font-weight: 400;
+}
+
+.closing-coda {
+    margin-top: 6rem;
+}
+
+.closing-lead {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    line-height: 1.25;
+    color: var(--text);
+    opacity: 1;
+    font-weight: 400;
+}
+
+.closing-sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text);
+    opacity: 0.6;
+    margin-top: 1.5rem;
+    max-width: 680px;
+    font-weight: 400;
+}
+
+/* ================================================================
+   LIBRARY GRID
+================================================================ */
+.lib-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    margin-top: 2.5rem;
+}
+
+.lib-card {
+    transition: transform 0.4s ease;
+    cursor: default;
+}
+
+.lib-card:hover {
+    transform: translateY(-4px);
+}
+
+.lib-cover {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: #0d1420;
+    margin-bottom: 0.55rem;
+}
+
+.lib-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.lib-card:hover .lib-cover img {
+    transform: scale(1.04);
+    filter: brightness(1.12);
+}
+
+.lib-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.9rem;
+    text-align: center;
+}
+
+.lib-placeholder span {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.7rem;
+    color: rgba(232, 228, 220, 0.35);
+    line-height: 1.55;
+}
+
+.lib-hover {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 12, 20, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.lib-card:hover .lib-hover {
+    opacity: 1;
+}
+
+.lib-hover span {
+    display: block;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.62rem;
+    line-height: 1.6;
+    color: rgba(232, 228, 220, 0.9);
+}
+
+.lib-title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.75rem;
+    color: var(--text);
+    line-height: 1.35;
+    margin-bottom: 0.18rem;
+}
+
+.lib-author {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+    line-height: 1.4;
+    margin-bottom: 0.1rem;
+}
+
+.lib-meta {
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    color: var(--dim);
+    letter-spacing: 0.03em;
+}
+
+/* ================================================================
    RESPONSIVE
 ================================================================ */
 @media (max-width: 900px) {
@@ -720,6 +921,8 @@ footer p {
     }
 
     .gallery-item { flex: 0 0 78%; }
+
+    .lib-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 600px) {
@@ -734,4 +937,6 @@ footer p {
     }
 
     nav ul a { font-size: 0.62rem; }
+
+    .lib-grid { grid-template-columns: repeat(2, 1fr); }
 }
