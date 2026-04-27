@@ -69,10 +69,10 @@
     ];
 
     const colorGroups = {
-      food:      { indices: [0,1,2,3,4,5], arc: "rgba(200,184,154,0.9)",  chord: "rgba(200,184,154,0.06)", hover: "rgba(200,184,154,0.45)" },
-      emissions: { indices: [6],           arc: "rgba(196,75,43,0.9)",    chord: "rgba(196,75,43,0.06)",   hover: "rgba(196,75,43,0.45)"   },
-      climate:   { indices: [7,8,9,10],    arc: "rgba(139,107,174,0.9)",  chord: "rgba(139,107,174,0.06)", hover: "rgba(139,107,174,0.45)" },
-      impact:    { indices: [11,12,13],    arc: "rgba(100,140,160,0.9)",  chord: "rgba(100,140,160,0.06)", hover: "rgba(100,140,160,0.45)" }
+      food:      { indices: [0,1,2,3,4,5], arc: "rgba(200,184,154,0.9)" },
+      emissions: { indices: [6],           arc: "rgba(196,75,43,0.9)"   },
+      climate:   { indices: [7,8,9,10],    arc: "rgba(139,107,174,0.9)" },
+      impact:    { indices: [11,12,13],    arc: "rgba(100,140,160,0.9)" }
     };
 
     const nodeGroup = {};
@@ -80,9 +80,9 @@
       cfg.indices.forEach(i => nodeGroup[i] = group);
     }
 
-    const arcColor   = i    => colorGroups[nodeGroup[i]]?.arc   || "#888";
-    const chordFill  = (s)  => colorGroups[nodeGroup[s]]?.chord || "rgba(200,200,200,0.12)";
-    const chordHover = (s)  => colorGroups[nodeGroup[s]]?.hover || "rgba(200,200,200,0.5)";
+    function arcColorOf(i)      { return colorGroups[nodeGroup[i]]?.arc || "rgba(200,200,200,0.9)"; }
+    function chordFillDefault(i){ return arcColorOf(i).replace(/,[\d.]+\)$/, ",0.15)"); }
+    function chordFillHover(i)  { return arcColorOf(i).replace(/,[\d.]+\)$/, ",0.6)");  }
 
     const tooltip   = document.getElementById("tooltip");
     const container = document.getElementById("chart");
@@ -112,6 +112,11 @@
       const arcGen      = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius);
       const ribbonGen   = d3.ribbon().radius(innerRadius);
 
+      // Center lift
+      g.append("circle")
+        .attr("cx", 0).attr("cy", 0).attr("r", innerRadius)
+        .attr("fill", "rgba(232,228,220,0.03)");
+
       // Arcs
       const group = g.append("g")
         .selectAll("g")
@@ -120,7 +125,7 @@
 
       const arcPaths = group.append("path")
         .attr("d", arcGen)
-        .attr("fill", d => arcColor(d.index))
+        .attr("fill", d => arcColorOf(d.index))
         .attr("stroke", "none")
         .style("cursor", "pointer");
 
@@ -141,17 +146,18 @@
 
       // Chords
       const chordPaths = g.append("g")
+        .style("mix-blend-mode", "screen")
         .selectAll("path")
         .data(chords)
         .join("path")
         .attr("d", ribbonGen)
-        .attr("fill", d => chordFill(d.source.index))
+        .attr("fill", d => chordFillDefault(d.source.index))
         .attr("stroke", "none")
         .style("cursor", "pointer");
 
       function resetChords() {
         chordPaths
-          .attr("fill", d => chordFill(d.source.index))
+          .attr("fill", d => chordFillDefault(d.source.index))
           .style("opacity", 1);
       }
 
@@ -174,10 +180,10 @@
           chordPaths
             .attr("fill", ch => {
               const hit = ch.source.index === i || ch.target.index === i;
-              return hit ? chordHover(ch.source.index) : chordFill(ch.source.index);
+              return hit ? chordFillHover(ch.source.index) : chordFillDefault(ch.source.index);
             })
             .style("opacity", ch =>
-              ch.source.index === i || ch.target.index === i ? 0.45 : 0.01
+              ch.source.index === i || ch.target.index === i ? 0.7 : 0.02
             );
           const conns = matrix[i]
             .map((v, j) => v > 0 ? `→ ${nodes[j]}: ${v}` : null)
@@ -194,9 +200,9 @@
         .on("mouseover", function(event, d) {
           chordPaths
             .attr("fill", ch =>
-              ch === d ? chordHover(d.source.index) : chordFill(ch.source.index)
+              ch === d ? chordFillHover(d.source.index) : chordFillDefault(ch.source.index)
             )
-            .style("opacity", ch => ch === d ? 0.45 : 0.01);
+            .style("opacity", ch => ch === d ? 0.7 : 0.02);
           showTooltip(event,
             `<strong>${nodes[d.source.index]}</strong> → <strong>${nodes[d.target.index]}</strong><br>flow: ${d.source.value}`
           );
