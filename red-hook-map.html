@@ -79,19 +79,6 @@
       max-width: 260px;
     }
 
-    /* ── Caption ─────────────────────────────────────── */
-    #caption {
-      position: fixed;
-      bottom: 1rem;
-      right: 1.5rem;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px;
-      color: rgba(232,228,220,0.25);
-      z-index: 10;
-      line-height: 1.7;
-      text-align: right;
-      pointer-events: none;
-    }
   </style>
 </head>
 <body>
@@ -126,8 +113,8 @@
     const map = new mapboxgl.Map({
       container: 'map',
       style:     'mapbox://styles/mapbox/dark-v11',
-      center:    [-74.0099, 40.6741],
-      zoom:      14
+      center:    [-74.0030, 40.6741],
+      zoom:      13
     });
 
     // ── Layer state ───────────────────────────────────────────────
