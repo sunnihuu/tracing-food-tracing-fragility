@@ -3,485 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feedback Loop Diagram</title>
+    <title>Environmental Feedback Loops</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400&family=Esteban&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --color-text-primary: #e8e4dc;
+            --color-text-secondary: rgba(232,228,220,0.55);
+            --color-text-tertiary: rgba(232,228,220,0.3);
+            --color-border-secondary: rgba(232,228,220,0.14);
+            --color-border-primary: rgba(232,228,220,0.38);
+            --color-background-secondary: rgba(232,228,220,0.05);
+            --font-serif: 'Esteban', serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background: #080c14;
-            overflow: hidden;
-            font-family: 'IBM Plex Mono', monospace;
+            font-family: var(--font-mono);
+            padding: 2rem;
         }
 
-        #wrap {
-            width: 100%;
-            height: 100vh;
-            position: relative;
+        .page {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            align-items: start;
         }
 
-        svg {
-            width: 100%;
-            height: 100%;
-            display: block;
+        .prose {
+            font-size: 13.5px;
+            line-height: 1.78;
+            color: var(--color-text-primary);
         }
 
-        /* ── Controls ── */
-        .controls {
-            position: absolute;
-            top: 14px;
-            right: 14px;
-            display: flex;
-            gap: 8px;
-            z-index: 10;
+        .prose p { margin: 0 0 1rem; }
+        .prose p:last-child { margin-bottom: 0; }
+
+        .prose h2 {
+            font-family: var(--font-serif);
+            font-size: 1.15rem;
+            font-weight: 400;
+            font-style: italic;
+            margin: 0 0 1.25rem;
+            color: var(--color-text-primary);
         }
 
-        .toggle-btn {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.65rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            padding: 0.5rem 1.2rem;
+        .diagram-wrap { position: sticky; top: 1rem; }
+
+        .tabs { display: flex; gap: 8px; margin-bottom: 1rem; }
+
+        .tab {
+            font-size: 11px;
+            font-family: var(--font-mono);
+            padding: 4px 10px;
+            border: 0.5px solid var(--color-border-secondary);
             border-radius: 0;
-            border: 1px solid rgba(232, 228, 220, 0.2);
-            background: transparent;
-            color: rgba(232, 228, 220, 0.3);
             cursor: pointer;
-            transition: border-color 0.2s, color 0.2s;
+            background: transparent;
+            color: var(--color-text-secondary);
+            transition: all 0.15s;
         }
 
-        .toggle-btn.on-food    { border-color: #3a9e8a; color: #3a9e8a; }
-        .toggle-btn.on-climate { border-color: #e05555; color: #e05555; }
+        .tab.active {
+            background: var(--color-background-secondary);
+            color: var(--color-text-primary);
+            border-color: var(--color-border-primary);
+        }
 
-        /* ── Legend ── */
         .legend {
-            position: absolute;
-            top: 14px;
-            left: 14px;
-            z-index: 10;
             display: flex;
             flex-direction: column;
-            gap: 7px;
+            gap: 6px;
+            margin-bottom: 1rem;
+            font-size: 11px;
+            color: var(--color-text-secondary);
+            font-family: var(--font-mono);
         }
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.65rem;
-            letter-spacing: 0.08em;
-            color: rgba(232, 228, 220, 0.55);
-            transition: opacity 0.25s;
-        }
+        .leg-row { display: flex; align-items: center; gap: 8px; }
+        .leg-line { width: 24px; height: 2px; flex-shrink: 0; }
+        .leg-dash { width: 24px; height: 0; flex-shrink: 0; border-top: 1.5px dashed; }
 
-        .legend-item.inactive { opacity: 0.2; }
-
-        .l-line {
-            width: 20px;
-            height: 1.5px;
-            flex-shrink: 0;
-        }
-
-        .l-dash {
-            width: 20px;
-            height: 1px;
-            flex-shrink: 0;
-        }
-
-        /* ── Tooltip ── */
-        .tooltip {
-            position: absolute;
-            background: rgba(13, 20, 32, 0.97);
-            border: 1px solid rgba(232, 228, 220, 0.1);
-            padding: 9px 13px;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.15s;
-            z-index: 20;
-            max-width: 200px;
-        }
-
-        .tt-name {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.6rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: #e8e4dc;
-            margin-bottom: 5px;
-        }
-
-        .tt-desc {
-            font-family: 'Esteban', serif;
-            font-style: italic;
-            font-size: 0.7rem;
-            color: rgba(232, 228, 220, 0.5);
-            line-height: 1.5;
+        .hint {
+            font-size: 11px;
+            font-family: var(--font-mono);
+            color: var(--color-text-tertiary);
+            margin-top: 0.75rem;
         }
     </style>
 </head>
 <body>
-<div id="wrap">
 
-    <div class="controls">
-        <button class="toggle-btn on-food"    id="btn-food">Food System</button>
-        <button class="toggle-btn on-climate" id="btn-climate">Climate Loop</button>
+<div class="page">
+
+    <div class="prose">
+        <h2>Environmental Feedback Loops</h2>
+        <p>Early research in this project focused on the environmental dimensions of these systems. The concept of a foodprint offered a way to understand food as a set of measurable impacts, like carbon emissions, land use, energy consumption, and to situate it within a broader cycle linking production, transport, consumption, and waste to climate processes.</p>
+        <p>What this mapping reveals is not a linear sequence, but a feedback loop: food systems contribute to climate change, while climate change introduces instability into food production, distribution, and pricing. Cause and effect do not separate neatly. They fold back on one another, producing conditions that are difficult to resolve through any single intervention.</p>
+        <p>This understanding is shaped by environmental systems thinking, where feedback loops are understood as recursive processes rather than linear chains of cause and effect, and where effects become conditions for further action.</p>
     </div>
 
-    <div class="legend">
-        <div class="legend-item" id="legend-food">
-            <div class="l-line" style="background:#3a9e8a"></div>
-            Food System Loop
+    <div class="diagram-wrap">
+        <div class="tabs">
+            <button class="tab active" onclick="setMode(this,'all')">All</button>
+            <button class="tab" onclick="setMode(this,'food')">Food system</button>
+            <button class="tab" onclick="setMode(this,'climate')">Climate loop</button>
         </div>
-        <div class="legend-item" id="legend-climate">
-            <div class="l-line" style="background:#e05555"></div>
-            Climate Loop
+        <div class="legend">
+            <div class="leg-row"><div class="leg-line" style="background:#1D9E75;"></div> Food system loop</div>
+            <div class="leg-row"><div class="leg-line" style="background:#D85A30;"></div> Climate loop</div>
+            <div class="leg-row"><div class="leg-dash" style="border-color:rgba(136,135,128,0.6);"></div> System bridge</div>
         </div>
-        <div class="legend-item">
-            <div class="l-dash" style="background:repeating-linear-gradient(90deg,rgba(136,136,136,0.7) 0,rgba(136,136,136,0.7) 6px,transparent 6px,transparent 10px)"></div>
-            System Bridge
-        </div>
-        <div class="legend-item">
-            <div class="l-dash" style="background:repeating-linear-gradient(90deg,#d4a030 0,#d4a030 6px,transparent 6px,transparent 10px)"></div>
-            Feedback
-        </div>
-    </div>
 
-    <div class="tooltip" id="tooltip">
-        <div class="tt-name" id="tt-name"></div>
-        <div class="tt-desc" id="tt-desc"></div>
+        <svg id="diagram" viewBox="0 0 340 360" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto;">
+            <defs>
+                <marker id="ah-teal" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#1D9E75"/>
+                </marker>
+                <marker id="ah-coral" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#D85A30"/>
+                </marker>
+                <marker id="ah-gray" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#888780"/>
+                </marker>
+            </defs>
+
+            <!-- Food system nodes -->
+            <g class="food-node">
+                <ellipse cx="80" cy="40" rx="36" ry="18" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.2"/>
+                <text x="80" y="44" text-anchor="middle" font-size="10" fill="#085041" font-family="sans-serif">Production</text>
+            </g>
+            <g class="food-node">
+                <ellipse cx="80" cy="120" rx="36" ry="18" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.2"/>
+                <text x="80" y="124" text-anchor="middle" font-size="10" fill="#085041" font-family="sans-serif">Processing</text>
+            </g>
+            <g class="food-node">
+                <ellipse cx="80" cy="200" rx="36" ry="18" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.2"/>
+                <text x="80" y="204" text-anchor="middle" font-size="10" fill="#085041" font-family="sans-serif">Transport</text>
+            </g>
+            <g class="food-node">
+                <ellipse cx="80" cy="280" rx="36" ry="18" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.2"/>
+                <text x="80" y="284" text-anchor="middle" font-size="10" fill="#085041" font-family="sans-serif">Retail</text>
+            </g>
+            <g class="food-node">
+                <ellipse cx="80" cy="330" rx="36" ry="18" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.2"/>
+                <text x="80" y="334" text-anchor="middle" font-size="10" fill="#085041" font-family="sans-serif">Consumption</text>
+            </g>
+            <g class="food-node">
+                <ellipse cx="170" cy="330" rx="28" ry="18" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.2"/>
+                <text x="170" y="334" text-anchor="middle" font-size="10" fill="#085041" font-family="sans-serif">Waste</text>
+            </g>
+
+            <!-- Climate nodes -->
+            <g class="climate-node">
+                <ellipse cx="270" cy="40" rx="42" ry="18" fill="#FAECE7" stroke="#D85A30" stroke-width="1.2"/>
+                <text x="270" y="37" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Climate</text>
+                <text x="270" y="49" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Change</text>
+            </g>
+            <g class="climate-node">
+                <ellipse cx="270" cy="120" rx="42" ry="18" fill="#FAECE7" stroke="#D85A30" stroke-width="1.2"/>
+                <text x="270" y="117" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Extreme</text>
+                <text x="270" y="129" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Weather</text>
+            </g>
+            <g class="climate-node">
+                <ellipse cx="270" cy="200" rx="42" ry="18" fill="#FAECE7" stroke="#D85A30" stroke-width="1.2"/>
+                <text x="270" y="197" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Reduced</text>
+                <text x="270" y="209" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Yields</text>
+            </g>
+            <g class="climate-node">
+                <ellipse cx="270" cy="280" rx="42" ry="18" fill="#FAECE7" stroke="#D85A30" stroke-width="1.2"/>
+                <text x="270" y="277" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Urban Food</text>
+                <text x="270" y="289" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Shortages</text>
+            </g>
+
+            <!-- Bridge node (diamond) -->
+            <g class="bridge-node">
+                <polygon points="175,193 196,206 175,219 154,206" fill="#FAEEDA" stroke="#BA7517" stroke-width="1.2"/>
+                <text x="175" y="203" text-anchor="middle" font-size="8" fill="#633806" font-family="sans-serif">High</text>
+                <text x="175" y="213" text-anchor="middle" font-size="8" fill="#633806" font-family="sans-serif">Emissions</text>
+            </g>
+
+            <!-- Food loop arrows -->
+            <line class="food-arrow" x1="80" y1="58" x2="80" y2="102" stroke="#1D9E75" stroke-width="1.2" marker-end="url(#ah-teal)"/>
+            <line class="food-arrow" x1="80" y1="138" x2="80" y2="182" stroke="#1D9E75" stroke-width="1.2" marker-end="url(#ah-teal)"/>
+            <line class="food-arrow" x1="80" y1="218" x2="80" y2="262" stroke="#1D9E75" stroke-width="1.2" marker-end="url(#ah-teal)"/>
+            <line class="food-arrow" x1="80" y1="298" x2="80" y2="312" stroke="#1D9E75" stroke-width="1.2" marker-end="url(#ah-teal)"/>
+            <line class="food-arrow" x1="116" y1="330" x2="142" y2="330" stroke="#1D9E75" stroke-width="1.2" marker-end="url(#ah-teal)"/>
+            <path class="food-arrow" d="M170 312 Q170 60 116 40" stroke="#1D9E75" stroke-width="1" fill="none" stroke-dasharray="4 3" marker-end="url(#ah-teal)"/>
+
+            <!-- Climate loop arrows -->
+            <line class="climate-arrow" x1="270" y1="58" x2="270" y2="102" stroke="#D85A30" stroke-width="1.2" marker-end="url(#ah-coral)"/>
+            <line class="climate-arrow" x1="270" y1="138" x2="270" y2="182" stroke="#D85A30" stroke-width="1.2" marker-end="url(#ah-coral)"/>
+            <line class="climate-arrow" x1="270" y1="218" x2="270" y2="262" stroke="#D85A30" stroke-width="1.2" marker-end="url(#ah-coral)"/>
+            <path class="climate-arrow" d="M310 280 Q330 160 312 58" stroke="#D85A30" stroke-width="1" fill="none" stroke-dasharray="4 3" marker-end="url(#ah-coral)"/>
+
+            <!-- Bridge arrows -->
+            <path class="bridge-arrow" d="M116 48 Q145 120 154 200" stroke="#888780" stroke-width="1" fill="none" stroke-dasharray="3 3" marker-end="url(#ah-gray)"/>
+            <line class="bridge-arrow" x1="196" y1="202" x2="228" y2="54" stroke="#888780" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#ah-gray)"/>
+            <line class="bridge-arrow" x1="228" y1="200" x2="196" y2="208" stroke="#888780" stroke-width="1" stroke-dasharray="3 3"/>
+            <line class="bridge-arrow" x1="228" y1="278" x2="116" y2="330" stroke="#888780" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#ah-gray)"/>
+        </svg>
+
+        <p class="hint">// toggle loops to isolate</p>
     </div>
 
 </div>
 
-<script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
-// ================================================================
-// LAYOUT CONSTANTS
-// ================================================================
-const W = 1100, H = 600;
-const NODE_R = 36;
+function setMode(btn, mode) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
 
-const RAD = deg => deg * Math.PI / 180;
+    const svg = document.getElementById('diagram');
+    const foodNodes   = svg.querySelectorAll('.food-node');
+    const climateNodes = svg.querySelectorAll('.climate-node');
+    const bridgeNodes  = svg.querySelectorAll('.bridge-node');
+    const foodArrows   = svg.querySelectorAll('.food-arrow');
+    const climateArrows = svg.querySelectorAll('.climate-arrow');
+    const bridgeArrows  = svg.querySelectorAll('.bridge-arrow');
 
-const FX = 265, FY = 300, FR = 165;
-const fp = deg => ({ x: FX + FR * Math.cos(RAD(deg)), y: FY + FR * Math.sin(RAD(deg)) });
+    const show = el => el.style.opacity = '1';
+    const dim  = el => el.style.opacity = '0.08';
 
-const CX = 835, CY = 300, CR = 165;
-const cp = deg => ({ x: CX + CR * Math.cos(RAD(deg)), y: CY + CR * Math.sin(RAD(deg)) });
+    foodNodes.forEach(show);
+    climateNodes.forEach(show);
+    bridgeNodes.forEach(show);
+    foodArrows.forEach(show);
+    climateArrows.forEach(show);
+    bridgeArrows.forEach(show);
 
-// ================================================================
-// DATA
-// ================================================================
-const TIPS = {
-    'Production':            'Where the food system begins',
-    'Processing':            'Adds energy cost before food reaches retail',
-    'Transport':             'Links every node in the system',
-    'Retail':                'The visible end of an invisible chain',
-    'Consumption':           'Daily, repeated, taken for granted',
-    'Waste':                 'Completes the loop, feeds back into emissions',
-    'Climate Change':        'Food systems generate 26% of global emissions',
-    'Extreme Weather':       'Disrupts growing seasons and supply routes',
-    'Reduced Yields':        'Less food produced under climate stress',
-    'Urban Food Shortages':  'Concentrated in low-income neighborhoods',
-    'System Expansion':      'Growth accelerates the cycle',
-    'High Emissions':        'Transport and processing release carbon',
-};
-
-const nodes = [
-    { id: 'production',       label: 'Production',          loop: 'food',    color: '#3a9e8a', ...fp(-90)  },
-    { id: 'processing',       label: 'Processing',          loop: 'food',    color: '#3a9e8a', ...fp(-30)  },
-    { id: 'transport',        label: 'Transport',           loop: 'bridge',  color: '#888888', ...fp(30)   },
-    { id: 'retail',           label: 'Retail',              loop: 'food',    color: '#3a9e8a', ...fp(90)   },
-    { id: 'consumption',      label: 'Consumption',         loop: 'food',    color: '#3a9e8a', ...fp(150)  },
-    { id: 'waste',            label: 'Waste',               loop: 'food',    color: '#3a9e8a', ...fp(210)  },
-    { id: 'climate_change',   label: 'Climate Change',      loop: 'climate', color: '#e05555', ...cp(-90)  },
-    { id: 'extreme_weather',  label: 'Extreme Weather',     loop: 'climate', color: '#e05555', ...cp(-30)  },
-    { id: 'reduced_yields',   label: 'Reduced Yields',      loop: 'climate', color: '#e05555', ...cp(30)   },
-    { id: 'urban_shortages',  label: 'Urban Food Shortages',loop: 'climate', color: '#e05555', ...cp(90)   },
-    { id: 'system_expansion', label: 'System Expansion',    loop: 'bridge',  color: '#d4a030', ...cp(150)  },
-    { id: 'high_emissions',   label: 'High Emissions',      loop: 'climate', color: '#e05555', ...cp(210)  },
-];
-
-const links = [
-    // Food loop — solid teal
-    { s: 'production',       t: 'processing',       type: 'food',     dash: false },
-    { s: 'processing',       t: 'transport',        type: 'food',     dash: false },
-    { s: 'transport',        t: 'retail',           type: 'food',     dash: false },
-    { s: 'retail',           t: 'consumption',      type: 'food',     dash: false },
-    { s: 'consumption',      t: 'waste',            type: 'food',     dash: false },
-    { s: 'waste',            t: 'production',       type: 'food',     dash: false },
-    // Climate loop — solid red
-    { s: 'climate_change',   t: 'extreme_weather',  type: 'climate',  dash: false },
-    { s: 'extreme_weather',  t: 'reduced_yields',   type: 'climate',  dash: false },
-    { s: 'reduced_yields',   t: 'urban_shortages',  type: 'climate',  dash: false },
-    { s: 'urban_shortages',  t: 'system_expansion', type: 'climate',  dash: false },
-    { s: 'system_expansion', t: 'high_emissions',   type: 'climate',  dash: false },
-    // Feedback — dashed gold, closes climate loop
-    { s: 'high_emissions',   t: 'climate_change',   type: 'feedback', dash: true  },
-    // System bridges — dashed grey
-    { s: 'production',       t: 'climate_change',   type: 'bridge',   dash: true  },
-    { s: 'transport',        t: 'urban_shortages',  type: 'bridge',   dash: true  },
-    { s: 'high_emissions',   t: 'production',       type: 'bridge',   dash: true  },
-    { s: 'system_expansion', t: 'retail',           type: 'bridge',   dash: true  },
-];
-
-const COLORS = {
-    food:     '#3a9e8a',
-    climate:  '#e05555',
-    bridge:   'rgba(136,136,136,0.55)',
-    feedback: '#d4a030',
-};
-
-// ================================================================
-// SVG SETUP
-// ================================================================
-const svg = d3.select('#wrap').append('svg')
-    .attr('viewBox', `0 0 ${W} ${H}`)
-    .attr('preserveAspectRatio', 'xMidYMid meet');
-
-svg.append('rect').attr('width', W).attr('height', H).attr('fill', '#080c14');
-
-// Arrow markers
-const defs = svg.append('defs');
-Object.entries(COLORS).forEach(([type, color]) => {
-    defs.append('marker')
-        .attr('id',           `arr-${type}`)
-        .attr('viewBox',      '0 -5 10 10')
-        .attr('refX',         9)
-        .attr('refY',         0)
-        .attr('markerWidth',  5)
-        .attr('markerHeight', 5)
-        .attr('orient',       'auto')
-        .append('path')
-        .attr('d',    'M0,-5L10,0L0,5')
-        .attr('fill', color);
-});
-
-// ================================================================
-// HELPERS
-// ================================================================
-const nMap = Object.fromEntries(nodes.map(n => [n.id, n]));
-
-function edgeCoords(d) {
-    const s = nMap[d.s], t = nMap[d.t];
-    const dx = t.x - s.x, dy = t.y - s.y;
-    const len = Math.sqrt(dx * dx + dy * dy);
-    const pad = NODE_R + 4;
-    return {
-        x1: s.x + (dx / len) * pad,
-        y1: s.y + (dy / len) * pad,
-        x2: t.x - (dx / len) * pad,
-        y2: t.y - (dy / len) * pad,
-    };
-}
-
-function wrapLabel(label) {
-    const words = label.split(' ');
-    if (words.length === 1) return [label];
-    const mid = Math.ceil(words.length / 2);
-    return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
-}
-
-// ================================================================
-// DRAW LINKS
-// ================================================================
-const linkSel = svg.append('g').attr('class', 'links')
-    .selectAll('line')
-    .data(links)
-    .enter().append('line')
-    .each(function(d) {
-        const c = edgeCoords(d);
-        d3.select(this)
-            .attr('x1', c.x1).attr('y1', c.y1)
-            .attr('x2', c.x2).attr('y2', c.y2);
-    })
-    .attr('stroke',           d => COLORS[d.type])
-    .attr('stroke-width',     d => d.type === 'bridge' ? 1 : 1.5)
-    .attr('stroke-dasharray', d => d.dash ? '6 4' : 'none')
-    .attr('opacity',          0.65)
-    .attr('marker-end',       d => `url(#arr-${d.type})`);
-
-// ================================================================
-// DRAW NODES
-// ================================================================
-const nodeSel = svg.append('g').attr('class', 'nodes')
-    .selectAll('g')
-    .data(nodes)
-    .enter().append('g')
-    .attr('transform', d => `translate(${d.x},${d.y})`)
-    .style('cursor', 'pointer');
-
-// Shape per node type
-nodeSel.each(function(d) {
-    const g = d3.select(this);
-
-    if (d.id === 'system_expansion') {
-        // Diamond
-        const s = 30;
-        g.append('polygon')
-            .attr('class',        'node-shape')
-            .attr('points',       `0,${-s} ${s},0 0,${s} ${-s},0`)
-            .attr('fill',         d.color + '28')
-            .attr('stroke',       d.color)
-            .attr('stroke-width', 1.5);
-
-    } else if (d.id === 'transport') {
-        // Dual ring: outer red, inner teal
-        g.append('circle')
-            .attr('r',            NODE_R + 8)
-            .attr('fill',         'none')
-            .attr('stroke',       '#e05555')
-            .attr('stroke-width', 1)
-            .attr('opacity',      0.5);
-        g.append('circle')
-            .attr('class',        'node-shape')
-            .attr('r',            NODE_R)
-            .attr('fill',         '#3a9e8a18')
-            .attr('stroke',       '#3a9e8a')
-            .attr('stroke-width', 1.5);
-
-    } else if (d.loop === 'climate') {
-        // Hollow circle — red stroke, no fill
-        g.append('circle')
-            .attr('class',        'node-shape')
-            .attr('r',            NODE_R)
-            .attr('fill',         'none')
-            .attr('stroke',       d.color)
-            .attr('stroke-width', 1.5);
-
-    } else {
-        // Food nodes — teal fill, slightly transparent
-        g.append('circle')
-            .attr('class',        'node-shape')
-            .attr('r',            NODE_R)
-            .attr('fill',         d.color + '28')
-            .attr('stroke',       d.color)
-            .attr('stroke-width', 1.5);
+    if (mode === 'food') {
+        climateNodes.forEach(dim);
+        bridgeNodes.forEach(dim);
+        climateArrows.forEach(dim);
+        bridgeArrows.forEach(dim);
+    } else if (mode === 'climate') {
+        foodNodes.forEach(dim);
+        bridgeNodes.forEach(dim);
+        foodArrows.forEach(dim);
+        bridgeArrows.forEach(dim);
     }
-});
-
-// Labels
-nodeSel.each(function(d) {
-    const lines  = wrapLabel(d.label);
-    const lineH  = 13;
-    const startY = -(lines.length - 1) * lineH / 2;
-    const g      = d3.select(this);
-
-    lines.forEach((line, i) => {
-        g.append('text')
-            .attr('text-anchor',    'middle')
-            .attr('y',              startY + i * lineH)
-            .attr('dy',             '0.35em')
-            .attr('fill',           '#e8e4dc')
-            .attr('font-family',    "'IBM Plex Mono', monospace")
-            .attr('font-size',      '11px')
-            .attr('pointer-events', 'none')
-            .text(line);
-    });
-});
-
-// ================================================================
-// TOOLTIP
-// ================================================================
-const tooltip = document.getElementById('tooltip');
-const ttName  = document.getElementById('tt-name');
-const ttDesc  = document.getElementById('tt-desc');
-const wrap    = document.getElementById('wrap');
-
-nodeSel
-    .on('mouseover', (event, d) => {
-        ttName.textContent = d.label;
-        ttDesc.textContent = TIPS[d.label] || '';
-        tooltip.style.opacity = '1';
-    })
-    .on('mousemove', event => {
-        const r = wrap.getBoundingClientRect();
-        const x = event.clientX - r.left + 16;
-        const y = event.clientY - r.top  - 52;
-        tooltip.style.left = Math.min(x, r.width - 215) + 'px';
-        tooltip.style.top  = Math.max(y, 8) + 'px';
-    })
-    .on('mouseout', () => {
-        tooltip.style.opacity = '0';
-    });
-
-// ================================================================
-// CLICK — HIGHLIGHT DIRECT CONNECTIONS
-// ================================================================
-let selected = null;
-
-nodeSel.on('click', (event, d) => {
-    if (selected === d.id) {
-        selected = null;
-        resetAll();
-        return;
-    }
-    selected = d.id;
-
-    const connected = new Set([d.id]);
-    links.forEach(l => {
-        if (l.s === d.id) connected.add(l.t);
-        if (l.t === d.id) connected.add(l.s);
-    });
-
-    nodeSel.attr('opacity', n => connected.has(n.id) ? 1 : 0.08);
-    nodeSel.filter(n => n.id === d.id)
-        .select('.node-shape')
-        .attr('stroke-width', 2.5);
-
-    linkSel
-        .attr('opacity',      l => (l.s === d.id || l.t === d.id) ? 0.9 : 0.04)
-        .attr('stroke-width', l => (l.s === d.id || l.t === d.id) ? 2.5 : 1);
-});
-
-function resetAll() {
-    nodeSel.attr('opacity', 1);
-    nodeSel.select('.node-shape').attr('stroke-width', 1.5);
-    linkSel
-        .attr('opacity',      0.65)
-        .attr('stroke-width', d => d.type === 'bridge' ? 1 : 1.5);
 }
-
-// ================================================================
-// TOGGLE LOOPS
-// ================================================================
-const state = { food: true, climate: true };
-
-function nodeOn(n) {
-    if (n.loop === 'food')    return state.food;
-    if (n.loop === 'climate') return state.climate;
-    return state.food || state.climate;
-}
-
-function linkOn(l) {
-    if (l.type === 'food')     return state.food;
-    if (l.type === 'climate')  return state.climate;
-    if (l.type === 'feedback') return state.climate;
-    return nodeOn(nMap[l.s]) && nodeOn(nMap[l.t]);
-}
-
-function applyVisibility() {
-    nodeSel.attr('opacity', n => nodeOn(n) ? 1 : 0.06);
-    linkSel.attr('opacity', l => linkOn(l) ? 0.65 : 0.04);
-
-    document.getElementById('legend-food').classList.toggle('inactive',    !state.food);
-    document.getElementById('legend-climate').classList.toggle('inactive', !state.climate);
-}
-
-document.getElementById('btn-food').addEventListener('click', function() {
-    state.food = !state.food;
-    selected   = null;
-    this.className = 'toggle-btn' + (state.food ? ' on-food' : '');
-    applyVisibility();
-});
-
-document.getElementById('btn-climate').addEventListener('click', function() {
-    state.climate = !state.climate;
-    selected      = null;
-    this.className = 'toggle-btn' + (state.climate ? ' on-climate' : '');
-    applyVisibility();
-});
 </script>
+
 </body>
 </html>
