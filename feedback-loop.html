@@ -7,12 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400&family=Esteban&display=swap" rel="stylesheet">
     <style>
         :root {
-            --color-text-primary: #e8e4dc;
-            --color-text-secondary: rgba(232,228,220,0.55);
-            --color-text-tertiary: rgba(232,228,220,0.3);
-            --color-border-secondary: rgba(232,228,220,0.14);
-            --color-border-primary: rgba(232,228,220,0.38);
-            --color-background-secondary: rgba(232,228,220,0.05);
             --font-serif: 'Esteban', serif;
             --font-mono: 'IBM Plex Mono', monospace;
         }
@@ -35,7 +29,7 @@
         .prose {
             font-size: 13.5px;
             line-height: 1.78;
-            color: var(--color-text-primary);
+            color: rgba(232,228,220,0.85);
         }
 
         .prose p { margin: 0 0 1rem; }
@@ -47,7 +41,7 @@
             font-weight: 400;
             font-style: italic;
             margin: 0 0 1.25rem;
-            color: var(--color-text-primary);
+            color: rgba(232,228,220,0.9);
         }
 
         .diagram-wrap { position: sticky; top: 1rem; }
@@ -55,21 +49,22 @@
         .tabs { display: flex; gap: 8px; margin-bottom: 1rem; }
 
         .tab {
-            font-size: 11px;
             font-family: var(--font-mono);
-            padding: 4px 10px;
-            border: 0.5px solid var(--color-border-secondary);
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border: 0.5px solid rgba(232,228,220,0.2);
             border-radius: 0;
             cursor: pointer;
             background: transparent;
-            color: var(--color-text-secondary);
-            transition: all 0.15s;
+            color: rgba(232,228,220,0.4);
+            transition: border-color 0.15s, color 0.15s;
         }
 
         .tab.active {
-            background: var(--color-background-secondary);
-            color: var(--color-text-primary);
-            border-color: var(--color-border-primary);
+            color: rgba(232,228,220,0.9);
+            border-color: rgba(232,228,220,0.5);
         }
 
         .legend {
@@ -77,19 +72,19 @@
             flex-direction: column;
             gap: 6px;
             margin-bottom: 1rem;
-            font-size: 11px;
-            color: var(--color-text-secondary);
             font-family: var(--font-mono);
+            font-size: 10px;
+            color: rgba(232,228,220,0.4);
         }
 
         .leg-row { display: flex; align-items: center; gap: 8px; }
-        .leg-line { width: 24px; height: 2px; flex-shrink: 0; }
-        .leg-dash { width: 24px; height: 0; flex-shrink: 0; border-top: 1.5px dashed; }
+        .leg-line { width: 24px; height: 1px; flex-shrink: 0; }
+        .leg-dash { width: 24px; height: 0; flex-shrink: 0; border-top: 1px dashed; }
 
         .hint {
-            font-size: 11px;
             font-family: var(--font-mono);
-            color: var(--color-text-tertiary);
+            font-size: 11px;
+            color: rgba(232,228,220,0.3);
             margin-top: 0.75rem;
         }
     </style>
@@ -114,7 +109,7 @@
         <div class="legend">
             <div class="leg-row"><div class="leg-line" style="background:#1D9E75;"></div> Food system loop</div>
             <div class="leg-row"><div class="leg-line" style="background:#D85A30;"></div> Climate loop</div>
-            <div class="leg-row"><div class="leg-dash" style="border-color:rgba(136,135,128,0.6);"></div> System bridge</div>
+            <div class="leg-row"><div class="leg-dash" style="border-color:rgba(136,135,128,0.5);"></div> System bridge</div>
         </div>
 
         <svg id="diagram" viewBox="0 0 340 360" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto;">
@@ -132,57 +127,57 @@
 
             <!-- Food system nodes -->
             <g class="food-node">
-                <ellipse cx="80" cy="40" rx="36" ry="18" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.2"/>
-                <text x="80" y="44" text-anchor="middle" font-size="10" fill="#085041" font-family="sans-serif">Production</text>
+                <ellipse cx="80" cy="40" rx="36" ry="18" fill="rgba(29,158,117,0.08)" stroke="#1D9E75" stroke-width="1"/>
+                <text x="80" y="44" text-anchor="middle" font-size="9" fill="#1D9E75" font-family="'IBM Plex Mono', monospace">Production</text>
             </g>
             <g class="food-node">
-                <ellipse cx="80" cy="120" rx="36" ry="18" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.2"/>
-                <text x="80" y="124" text-anchor="middle" font-size="10" fill="#085041" font-family="sans-serif">Processing</text>
+                <ellipse cx="80" cy="120" rx="36" ry="18" fill="rgba(29,158,117,0.08)" stroke="#1D9E75" stroke-width="1"/>
+                <text x="80" y="124" text-anchor="middle" font-size="9" fill="#1D9E75" font-family="'IBM Plex Mono', monospace">Processing</text>
             </g>
             <g class="food-node">
-                <ellipse cx="80" cy="200" rx="36" ry="18" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.2"/>
-                <text x="80" y="204" text-anchor="middle" font-size="10" fill="#085041" font-family="sans-serif">Transport</text>
+                <ellipse cx="80" cy="200" rx="36" ry="18" fill="rgba(29,158,117,0.08)" stroke="#1D9E75" stroke-width="1"/>
+                <text x="80" y="204" text-anchor="middle" font-size="9" fill="#1D9E75" font-family="'IBM Plex Mono', monospace">Transport</text>
             </g>
             <g class="food-node">
-                <ellipse cx="80" cy="280" rx="36" ry="18" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.2"/>
-                <text x="80" y="284" text-anchor="middle" font-size="10" fill="#085041" font-family="sans-serif">Retail</text>
+                <ellipse cx="80" cy="280" rx="36" ry="18" fill="rgba(29,158,117,0.08)" stroke="#1D9E75" stroke-width="1"/>
+                <text x="80" y="284" text-anchor="middle" font-size="9" fill="#1D9E75" font-family="'IBM Plex Mono', monospace">Retail</text>
             </g>
             <g class="food-node">
-                <ellipse cx="80" cy="330" rx="36" ry="18" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.2"/>
-                <text x="80" y="334" text-anchor="middle" font-size="10" fill="#085041" font-family="sans-serif">Consumption</text>
+                <ellipse cx="80" cy="330" rx="36" ry="18" fill="rgba(29,158,117,0.08)" stroke="#1D9E75" stroke-width="1"/>
+                <text x="80" y="334" text-anchor="middle" font-size="9" fill="#1D9E75" font-family="'IBM Plex Mono', monospace">Consumption</text>
             </g>
             <g class="food-node">
-                <ellipse cx="170" cy="330" rx="28" ry="18" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.2"/>
-                <text x="170" y="334" text-anchor="middle" font-size="10" fill="#085041" font-family="sans-serif">Waste</text>
+                <ellipse cx="170" cy="330" rx="28" ry="18" fill="rgba(29,158,117,0.08)" stroke="#1D9E75" stroke-width="1"/>
+                <text x="170" y="334" text-anchor="middle" font-size="9" fill="#1D9E75" font-family="'IBM Plex Mono', monospace">Waste</text>
             </g>
 
             <!-- Climate nodes -->
             <g class="climate-node">
-                <ellipse cx="270" cy="40" rx="42" ry="18" fill="#FAECE7" stroke="#D85A30" stroke-width="1.2"/>
-                <text x="270" y="37" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Climate</text>
-                <text x="270" y="49" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Change</text>
+                <ellipse cx="270" cy="40" rx="42" ry="18" fill="rgba(216,90,48,0.08)" stroke="#D85A30" stroke-width="1"/>
+                <text x="270" y="37" text-anchor="middle" font-size="9" fill="#D85A30" font-family="'IBM Plex Mono', monospace">Climate</text>
+                <text x="270" y="49" text-anchor="middle" font-size="9" fill="#D85A30" font-family="'IBM Plex Mono', monospace">Change</text>
             </g>
             <g class="climate-node">
-                <ellipse cx="270" cy="120" rx="42" ry="18" fill="#FAECE7" stroke="#D85A30" stroke-width="1.2"/>
-                <text x="270" y="117" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Extreme</text>
-                <text x="270" y="129" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Weather</text>
+                <ellipse cx="270" cy="120" rx="42" ry="18" fill="rgba(216,90,48,0.08)" stroke="#D85A30" stroke-width="1"/>
+                <text x="270" y="117" text-anchor="middle" font-size="9" fill="#D85A30" font-family="'IBM Plex Mono', monospace">Extreme</text>
+                <text x="270" y="129" text-anchor="middle" font-size="9" fill="#D85A30" font-family="'IBM Plex Mono', monospace">Weather</text>
             </g>
             <g class="climate-node">
-                <ellipse cx="270" cy="200" rx="42" ry="18" fill="#FAECE7" stroke="#D85A30" stroke-width="1.2"/>
-                <text x="270" y="197" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Reduced</text>
-                <text x="270" y="209" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Yields</text>
+                <ellipse cx="270" cy="200" rx="42" ry="18" fill="rgba(216,90,48,0.08)" stroke="#D85A30" stroke-width="1"/>
+                <text x="270" y="197" text-anchor="middle" font-size="9" fill="#D85A30" font-family="'IBM Plex Mono', monospace">Reduced</text>
+                <text x="270" y="209" text-anchor="middle" font-size="9" fill="#D85A30" font-family="'IBM Plex Mono', monospace">Yields</text>
             </g>
             <g class="climate-node">
-                <ellipse cx="270" cy="280" rx="42" ry="18" fill="#FAECE7" stroke="#D85A30" stroke-width="1.2"/>
-                <text x="270" y="277" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Urban Food</text>
-                <text x="270" y="289" text-anchor="middle" font-size="9.5" fill="#4A1B0C" font-family="sans-serif">Shortages</text>
+                <ellipse cx="270" cy="280" rx="42" ry="18" fill="rgba(216,90,48,0.08)" stroke="#D85A30" stroke-width="1"/>
+                <text x="270" y="277" text-anchor="middle" font-size="9" fill="#D85A30" font-family="'IBM Plex Mono', monospace">Urban Food</text>
+                <text x="270" y="289" text-anchor="middle" font-size="9" fill="#D85A30" font-family="'IBM Plex Mono', monospace">Shortages</text>
             </g>
 
             <!-- Bridge node (diamond) -->
             <g class="bridge-node">
-                <polygon points="175,193 196,206 175,219 154,206" fill="#FAEEDA" stroke="#BA7517" stroke-width="1.2"/>
-                <text x="175" y="203" text-anchor="middle" font-size="8" fill="#633806" font-family="sans-serif">High</text>
-                <text x="175" y="213" text-anchor="middle" font-size="8" fill="#633806" font-family="sans-serif">Emissions</text>
+                <polygon points="175,193 196,206 175,219 154,206" fill="rgba(186,117,23,0.08)" stroke="#BA7517" stroke-width="1"/>
+                <text x="175" y="203" text-anchor="middle" font-size="9" fill="#BA7517" font-family="'IBM Plex Mono', monospace">High</text>
+                <text x="175" y="213" text-anchor="middle" font-size="9" fill="#BA7517" font-family="'IBM Plex Mono', monospace">Emissions</text>
             </g>
 
             <!-- Food loop arrows -->
@@ -200,10 +195,10 @@
             <path class="climate-arrow" d="M310 280 Q330 160 312 58" stroke="#D85A30" stroke-width="1" fill="none" stroke-dasharray="4 3" marker-end="url(#ah-coral)"/>
 
             <!-- Bridge arrows -->
-            <path class="bridge-arrow" d="M116 48 Q145 120 154 200" stroke="#888780" stroke-width="1" fill="none" stroke-dasharray="3 3" marker-end="url(#ah-gray)"/>
-            <line class="bridge-arrow" x1="196" y1="202" x2="228" y2="54" stroke="#888780" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#ah-gray)"/>
-            <line class="bridge-arrow" x1="228" y1="200" x2="196" y2="208" stroke="#888780" stroke-width="1" stroke-dasharray="3 3"/>
-            <line class="bridge-arrow" x1="228" y1="278" x2="116" y2="330" stroke="#888780" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#ah-gray)"/>
+            <path class="bridge-arrow" d="M116 48 Q145 120 154 200" stroke="#888780" stroke-width="1" fill="none" stroke-dasharray="3 3" marker-end="url(#ah-gray)" opacity="0.7"/>
+            <line class="bridge-arrow" x1="196" y1="202" x2="228" y2="54" stroke="#888780" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#ah-gray)" opacity="0.7"/>
+            <line class="bridge-arrow" x1="228" y1="200" x2="196" y2="208" stroke="#888780" stroke-width="1" stroke-dasharray="3 3" opacity="0.7"/>
+            <line class="bridge-arrow" x1="228" y1="278" x2="116" y2="330" stroke="#888780" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#ah-gray)" opacity="0.7"/>
         </svg>
 
         <p class="hint">// toggle loops to isolate</p>
@@ -217,14 +212,14 @@ function setMode(btn, mode) {
     btn.classList.add('active');
 
     const svg = document.getElementById('diagram');
-    const foodNodes   = svg.querySelectorAll('.food-node');
+    const foodNodes    = svg.querySelectorAll('.food-node');
     const climateNodes = svg.querySelectorAll('.climate-node');
     const bridgeNodes  = svg.querySelectorAll('.bridge-node');
     const foodArrows   = svg.querySelectorAll('.food-arrow');
     const climateArrows = svg.querySelectorAll('.climate-arrow');
     const bridgeArrows  = svg.querySelectorAll('.bridge-arrow');
 
-    const show = el => el.style.opacity = '1';
+    const show = el => el.style.opacity = '';
     const dim  = el => el.style.opacity = '0.08';
 
     foodNodes.forEach(show);
