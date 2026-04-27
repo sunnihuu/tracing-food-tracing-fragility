@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #080c14;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #chart {
+      flex: 1;
+      min-height: 0;
+    }
+    #chart svg {
+      display: block;
+    }
+    #tooltip {
+      position: fixed;
+      pointer-events: none;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: rgba(232,228,220,0.9);
+      background: #0d1420;
+      border: 1px solid rgba(232,228,220,0.15);
+      padding: 0.6rem 0.9rem;
+      line-height: 1.7;
+      display: none;
+      z-index: 10;
+      max-width: 220px;
+    }
+  </style>
+</head>
+<body>
+  <div id="chart"></div>
+  <div id="tooltip"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script>
+    const nodes = [
+      "Production", "Processing", "Transport", "Retail",
+      "Consumption", "Waste", "Emissions", "Climate Change",
+      "Extreme Weather", "Reduced Yield", "Price Instability",
+      "Food Access", "Food Shortage", "System Expansion"
+    ];
+
+    const matrix = [
+      [0,8,0,0,0,0,6,0,0,0,0,0,0,0],
+      [0,0,8,0,0,0,5,0,0,0,0,0,0,0],
+      [0,0,0,8,0,0,7,0,0,0,0,4,0,0],
+      [0,0,0,0,8,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,8,0,0,0,0,0,0,0,0],
+      [6,0,0,0,0,0,5,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,10,0,0,0,0,0,0],
+      [0,0,4,0,0,0,0,0,10,0,0,4,0,0],
+      [0,0,0,0,0,0,0,0,0,10,0,0,0,0],
+      [5,0,0,0,0,0,0,0,0,0,7,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,8,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,8,0],
+      [0,0,0,0,5,0,0,0,0,0,0,0,0,6],
+      [6,0,5,0,0,0,7,0,0,0,0,0,0,0]
+    ];
+
+    const colorGroups = {
+      food:      { indices: [0,1,2,3,4,5], arc: "#1D9E75", chord: "rgba(29,158,117,0.12)",  hover: "rgba(29,158,117,0.5)"  },
+      emissions: { indices: [6],           arc: "#BA7517", chord: "rgba(186,117,23,0.12)",  hover: "rgba(186,117,23,0.5)"  },
+      climate:   { indices: [7,8,9,10],    arc: "#D85A30", chord: "rgba(216,90,48,0.12)",   hover: "rgba(216,90,48,0.5)"   },
+      impact:    { indices: [11,12,13],    arc: "#8B6BAE", chord: "rgba(139,107,174,0.12)", hover: "rgba(139,107,174,0.5)" }
+    };
+
+    const nodeGroup = {};
+    for (const [group, cfg] of Object.entries(colorGroups)) {
+      cfg.indices.forEach(i => nodeGroup[i] = group);
+    }
+
+    const arcColor   = i    => colorGroups[nodeGroup[i]]?.arc   || "#888";
+    const chordFill  = (s)  => colorGroups[nodeGroup[s]]?.chord || "rgba(200,200,200,0.12)";
+    const chordHover = (s)  => colorGroups[nodeGroup[s]]?.hover || "rgba(200,200,200,0.5)";
+
+    const tooltip   = document.getElementById("tooltip");
+    const container = document.getElementById("chart");
+
+    function drawDiagram() {
+      const w    = container.clientWidth  || 400;
+      const h    = container.clientHeight || 400;
+      const size = Math.min(w, h);
+
+      const outerRadius = size * 0.42;
+      const innerRadius = outerRadius - 18;
+      const fontSize    = Math.max(8, outerRadius * 0.07);
+      const labelRadius = outerRadius + 10;
+
+      const svg = d3.select("#chart")
+        .append("svg")
+        .attr("width",  "100%")
+        .attr("height", "100%")
+        .attr("viewBox", `0 0 ${size} ${size}`)
+        .attr("preserveAspectRatio", "xMidYMid meet");
+
+      const g = svg.append("g")
+        .attr("transform", `translate(${size / 2},${size / 2})`);
+
+      const chordLayout = d3.chord().padAngle(0.02).sortSubgroups(d3.descending);
+      const chords      = chordLayout(matrix);
+      const arcGen      = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius);
+      const ribbonGen   = d3.ribbon().radius(innerRadius);
+
+      // Arcs
+      const group = g.append("g")
+        .selectAll("g")
+        .data(chords.groups)
+        .join("g");
+
+      const arcPaths = group.append("path")
+        .attr("d", arcGen)
+        .attr("fill", d => arcColor(d.index))
+        .attr("stroke", "none")
+        .style("cursor", "pointer");
+
+      // Labels
+      group.append("text")
+        .each(d => { d.angle = (d.startAngle + d.endAngle) / 2; })
+        .attr("dy", "0.35em")
+        .attr("transform", d => `
+          rotate(${d.angle * 180 / Math.PI - 90})
+          translate(${labelRadius},0)
+          ${d.angle > Math.PI ? "rotate(180)" : ""}
+        `)
+        .attr("text-anchor", d => d.angle > Math.PI ? "end" : "start")
+        .attr("fill", "rgba(232,228,220,0.7)")
+        .attr("font-family", "IBM Plex Mono, monospace")
+        .attr("font-size", `${fontSize}px`)
+        .text(d => nodes[d.index]);
+
+      // Chords
+      const chordPaths = g.append("g")
+        .selectAll("path")
+        .data(chords)
+        .join("path")
+        .attr("d", ribbonGen)
+        .attr("fill", d => chordFill(d.source.index))
+        .attr("stroke", "none")
+        .style("cursor", "pointer");
+
+      function resetChords() {
+        chordPaths
+          .attr("fill", d => chordFill(d.source.index))
+          .style("opacity", 1);
+      }
+
+      function showTooltip(event, html) {
+        tooltip.innerHTML     = html;
+        tooltip.style.display = "block";
+        tooltip.style.left    = (event.clientX + 14) + "px";
+        tooltip.style.top     = (event.clientY  - 10) + "px";
+      }
+      function moveTooltip(event) {
+        tooltip.style.left = (event.clientX + 14) + "px";
+        tooltip.style.top  = (event.clientY  - 10) + "px";
+      }
+      function hideTooltip() { tooltip.style.display = "none"; }
+
+      // Arc hover
+      arcPaths
+        .on("mouseover", function(event, d) {
+          const i = d.index;
+          chordPaths
+            .attr("fill", ch => {
+              const hit = ch.source.index === i || ch.target.index === i;
+              return hit ? chordHover(ch.source.index) : chordFill(ch.source.index);
+            })
+            .style("opacity", ch =>
+              ch.source.index === i || ch.target.index === i ? 1 : 0.02
+            );
+          const conns = matrix[i]
+            .map((v, j) => v > 0 ? `→ ${nodes[j]}: ${v}` : null)
+            .filter(Boolean);
+          showTooltip(event,
+            `<strong>${nodes[i]}</strong><br>${conns.join("<br>") || "no outgoing"}`
+          );
+        })
+        .on("mousemove", moveTooltip)
+        .on("mouseout",  () => { resetChords(); hideTooltip(); });
+
+      // Chord hover
+      chordPaths
+        .on("mouseover", function(event, d) {
+          chordPaths
+            .attr("fill", ch =>
+              ch === d ? chordHover(d.source.index) : chordFill(ch.source.index)
+            )
+            .style("opacity", ch => ch === d ? 1 : 0.02);
+          showTooltip(event,
+            `<strong>${nodes[d.source.index]}</strong> → <strong>${nodes[d.target.index]}</strong><br>flow: ${d.source.value}`
+          );
+        })
+        .on("mousemove", moveTooltip)
+        .on("mouseout",  () => { resetChords(); hideTooltip(); });
+    }
+
+    drawDiagram();
+
+    let resizeTimer;
+    new ResizeObserver(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        d3.select("#chart svg").remove();
+        drawDiagram();
+      }, 80);
+    }).observe(document.body);
+  </script>
+</body>
+</html>
