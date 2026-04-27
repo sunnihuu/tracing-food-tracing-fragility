@@ -506,7 +506,6 @@ details.data-panel summary:hover { color: var(--text); }
 }
 
 .unity-enter:hover {
-    letter-spacing: 0.25em;
     color: var(--text);
 }
 
