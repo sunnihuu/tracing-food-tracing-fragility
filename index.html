@@ -270,7 +270,8 @@
                 </div>
 
                 <!-- Unity screenshot gallery — horizontal scroll -->
-                <div class="gallery">
+                <div class="gallery-wrap">
+                  <div class="gallery" id="unity-gallery">
                     <div class="gallery-item">
                         <img src="images/unity screenshots/TV - 8.png" alt="Unity environment screenshot" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;">
                     </div>
@@ -286,6 +287,13 @@
                     <div class="gallery-item">
                         <img src="images/unity screenshots/TV - 15.png" alt="Unity environment screenshot" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;">
                     </div>
+                  </div>
+                  <div class="gallery-footer">
+                     <div class="gallery-scroll-hint" id="unity-scroll-hint">Explore →</div>
+                    <div class="gallery-progress-track">
+                      <div class="gallery-progress-fill" id="unity-gallery-progress"></div>
+                    </div>
+                  </div>
                 </div>
 
             </div>
@@ -641,7 +649,7 @@
                 const box    = new THREE.Box3().setFromObject(obj);
                 const centre = box.getCenter(new THREE.Vector3());
                 const size   = box.getSize(new THREE.Vector3());
-                const scale  = 8 / Math.max(size.x, size.y, size.z);
+                const scale  = 11 / Math.max(size.x, size.y, size.z);
                 obj.scale.setScalar(scale);
                 obj.position.sub(centre.multiplyScalar(scale));
                 scene.add(obj);
@@ -698,6 +706,32 @@
     </script>
 
     <script>
+    // ── Gallery scroll affordance ─────────────────────────────────
+    (function () {
+      const gallery     = document.getElementById('unity-gallery');
+      const progressFill = document.getElementById('unity-gallery-progress');
+      const scrollHint  = document.getElementById('unity-scroll-hint');
+      if (!gallery || !progressFill) return;
+
+      // Update progress bar on scroll
+      gallery.addEventListener('scroll', function () {
+        const max = gallery.scrollWidth - gallery.clientWidth;
+        const pct = max > 0 ? (gallery.scrollLeft / max * 100) : 0;
+        progressFill.style.width = pct + '%';
+        if (scrollHint && gallery.scrollLeft > 8) {
+          scrollHint.style.opacity = '0';
+        }
+      }, { passive: true });
+
+      // Nudge once on load to hint scrollability
+      setTimeout(function () {
+        gallery.scrollTo({ left: 16, behavior: 'smooth' });
+        setTimeout(function () {
+          gallery.scrollTo({ left: 0, behavior: 'smooth' });
+        }, 700);
+      }, 900);
+    })();
+
     const bookCursor    = document.getElementById('book-cursor');
     const bookCursorImg = document.getElementById('book-cursor-img');
 

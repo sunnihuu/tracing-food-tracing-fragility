@@ -421,23 +421,81 @@ details.data-panel summary:hover { color: var(--text); }
 /* ================================================================
    UNITY GALLERY — horizontal scroll
 ================================================================ */
+/* Gallery wrapper — edge fades + progress bar layout */
+.gallery-wrap {
+    position: relative;
+    margin-top: 3.5rem;
+}
+
+/* Left edge fade */
+.gallery-wrap::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 1.75rem;
+    width: 72px;
+    background: linear-gradient(to right, #080c14 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Right edge fade */
+.gallery-wrap::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 1.75rem;
+    width: 96px;
+    background: linear-gradient(to left, #080c14 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 2;
+}
+
 .gallery {
     display: flex;
     gap: 1.5rem;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    padding-bottom: 1.5rem;
-    margin-top: 3.5rem;
+    padding-bottom: 0.5rem;
+    margin-top: 0;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(200,205,214,0.15) transparent;
+    scrollbar-width: none;
 }
 
-.gallery::-webkit-scrollbar { height: 2px; }
-.gallery::-webkit-scrollbar-track { background: transparent; }
-.gallery::-webkit-scrollbar-thumb {
-    background: rgba(200,205,214,0.18);
-    border-radius: 1px;
+.gallery::-webkit-scrollbar { display: none; }
+
+/* Footer row: progress bar + scroll hint */
+.gallery-footer {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-top: 0.75rem;
+}
+
+.gallery-progress-track {
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+}
+
+.gallery-progress-fill {
+    height: 100%;
+    background: #c8752f;
+    width: 0%;
+    transition: width 0.12s linear;
+}
+
+.gallery-scroll-hint {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.46rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(232,228,220,0.28);
+    flex-shrink: 0;
+    white-space: nowrap;
+    transition: opacity 0.8s;
 }
 
 .gallery-item {
