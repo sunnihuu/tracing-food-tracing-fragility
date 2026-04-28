@@ -51,15 +51,16 @@
       "Food Access", "Food Short.", "Sys. Expansion"
     ];
 
+    // Filter weak connections (≤ 4) to reduce visual noise
     const matrix = [
       [0,8,0,0,0,0,6,0,0,0,0,0,0,0],
       [0,0,8,0,0,0,5,0,0,0,0,0,0,0],
-      [0,0,0,8,0,0,7,0,0,0,0,4,0,0],
+      [0,0,0,8,0,0,7,0,0,0,0,0,0,0],
       [0,0,0,0,8,0,0,0,0,0,0,0,0,0],
       [0,0,0,0,0,8,0,0,0,0,0,0,0,0],
       [6,0,0,0,0,0,5,0,0,0,0,0,0,0],
       [0,0,0,0,0,0,0,10,0,0,0,0,0,0],
-      [0,0,4,0,0,0,0,0,10,0,0,4,0,0],
+      [0,0,0,0,0,0,0,0,10,0,0,0,0,0],
       [0,0,0,0,0,0,0,0,0,10,0,0,0,0],
       [5,0,0,0,0,0,0,0,0,0,7,0,0,0],
       [0,0,0,0,0,0,0,0,0,0,0,8,0,0],
@@ -81,40 +82,52 @@
     }
 
     function arcColorOf(i)      { return colorGroups[nodeGroup[i]]?.arc || "rgba(200,200,200,0.9)"; }
-    function chordFillDefault(i){ return arcColorOf(i).replace(/,[\d.]+\)$/, ",0.15)"); }
-    function chordFillHover(i)  { return arcColorOf(i).replace(/,[\d.]+\)$/, ",0.6)");  }
+    function chordFillDefault(i){ return arcColorOf(i).replace(/,[\d.]+\)$/, ",0.14)"); }
+    function chordFillHover(i)  { return arcColorOf(i).replace(/,[\d.]+\)$/, ",0.68)"); }
+
+    function linkStrength(v) {
+      if (v >= 9) return 'strong';
+      if (v >= 7) return 'moderate';
+      return 'weak';
+    }
+
+    function strengthLine(v) {
+      const s = linkStrength(v);
+      if (s === 'strong')   return 'Strong dependency within the system';
+      if (s === 'moderate') return 'Moderate dependency within the system';
+      return 'Weak dependency within the system';
+    }
 
     const tooltip   = document.getElementById("tooltip");
     const container = document.getElementById("chart");
 
     function drawDiagram() {
-      const w    = container.clientWidth  || 400;
-      const h    = container.clientHeight || 400;
+      const w    = container.clientWidth  || 600;
+      const h    = container.clientHeight || 600;
       const size = Math.min(w, h);
 
-      const outerRadius = size * 0.35;
-      const innerRadius = outerRadius - 16;
-      const fontSize    = 8;
-      const labelRadius = outerRadius + 10;
+      const outerRadius = size * 0.44;
+      const innerRadius = outerRadius - 20;
+      const fontSize    = 10;
+      const labelRadius = outerRadius + 9;
 
       const svg = d3.select("#chart")
         .append("svg")
         .attr("width",  "100%")
         .attr("height", "100%")
-        .attr("viewBox", `0 0 600 600`)
+        .attr("viewBox", `0 0 ${w} ${h}`)
         .attr("preserveAspectRatio", "xMidYMid meet");
 
       const g = svg.append("g")
-        .attr("transform", `translate(300,300)`);
+        .attr("transform", `translate(${w / 2},${h / 2})`);
 
-      const chordLayout = d3.chord().padAngle(0.02).sortSubgroups(d3.descending);
+      const chordLayout = d3.chord().padAngle(0.025).sortSubgroups(d3.descending);
       const chords      = chordLayout(matrix);
       const arcGen      = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius);
       const ribbonGen   = d3.ribbon().radius(innerRadius);
 
-      // Center lift
       g.append("circle")
-        .attr("cx", 0).attr("cy", 0).attr("r", innerRadius)
+        .attr("r", innerRadius)
         .attr("fill", "rgba(232,228,220,0.03)");
 
       // Arcs
@@ -139,7 +152,7 @@
           ${d.angle > Math.PI ? "rotate(180)" : ""}
         `)
         .attr("text-anchor", d => d.angle > Math.PI ? "end" : "start")
-        .attr("fill", "rgba(232,228,220,0.55)")
+        .attr("fill", "rgba(232,228,220,0.6)")
         .attr("font-family", "IBM Plex Mono, monospace")
         .attr("font-size", `${fontSize}px`)
         .text(d => nodes[d.index]);
@@ -173,7 +186,7 @@
       }
       function hideTooltip() { tooltip.style.display = "none"; }
 
-      // Arc hover
+      // Arc hover — highlight related chords, show qualitative connections
       arcPaths
         .on("mouseover", function(event, d) {
           const i = d.index;
@@ -183,28 +196,39 @@
               return hit ? chordFillHover(ch.source.index) : chordFillDefault(ch.source.index);
             })
             .style("opacity", ch =>
-              ch.source.index === i || ch.target.index === i ? 0.7 : 0.02
+              ch.source.index === i || ch.target.index === i ? 0.8 : 0.01
             );
+
           const conns = matrix[i]
-            .map((v, j) => v > 0 ? `→ ${nodes[j]}: ${v}` : null)
+            .map((v, j) => v > 0 ? { j, v } : null)
             .filter(Boolean);
-          showTooltip(event,
-            `<strong>${nodes[i]}</strong><br>${conns.join("<br>") || "no outgoing"}`
-          );
+
+          let html = `<strong>${nodes[i]}</strong>`;
+          if (conns.length) {
+            html += `<br><span style="color:rgba(232,228,220,0.38);font-size:10px">connects to:</span>`;
+            conns.forEach(({ j, v }) => {
+              html += `<br>→ ${nodes[j]} <span style="color:rgba(232,228,220,0.38)">(${linkStrength(v)} link)</span>`;
+            });
+          } else {
+            html += `<br><span style="color:rgba(232,228,220,0.4)">no outgoing connections</span>`;
+          }
+          showTooltip(event, html);
         })
         .on("mousemove", moveTooltip)
         .on("mouseout",  () => { resetChords(); hideTooltip(); });
 
-      // Chord hover
+      // Chord hover — plain-language relationship description
       chordPaths
         .on("mouseover", function(event, d) {
           chordPaths
             .attr("fill", ch =>
               ch === d ? chordFillHover(d.source.index) : chordFillDefault(ch.source.index)
             )
-            .style("opacity", ch => ch === d ? 0.7 : 0.02);
+            .style("opacity", ch => ch === d ? 0.8 : 0.01);
+
           showTooltip(event,
-            `<strong>${nodes[d.source.index]}</strong> → <strong>${nodes[d.target.index]}</strong><br>flow: ${d.source.value}`
+            `<strong>${nodes[d.source.index]}</strong> → <strong>${nodes[d.target.index]}</strong>` +
+            `<br><span style="color:rgba(232,228,220,0.55)">${strengthLine(d.source.value)}</span>`
           );
         })
         .on("mousemove", moveTooltip)
