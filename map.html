@@ -126,9 +126,41 @@
         <div class="toggle-dot" style="background:#e879a0"></div>
         <span class="toggle-label">Emergency Food</span>
     </div>
+    <div id="food-sites-legend" style="display:none; padding: 4px 14px 6px 16px; gap: 5px; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:7px;">
+            <div style="width:7px; height:7px; border-radius:50%; background:#e879a0; flex-shrink:0;"></div>
+            <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Food Pantry</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:7px;">
+            <div style="width:7px; height:7px; border-radius:50%; background:#e84a6a; flex-shrink:0;"></div>
+            <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Food Pantry — Kosher</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:7px;">
+            <div style="width:7px; height:7px; border-radius:50%; background:#ff9944; flex-shrink:0;"></div>
+            <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Food Pantry — Mobile</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:7px;">
+            <div style="width:7px; height:7px; border-radius:50%; background:#9b59b6; flex-shrink:0;"></div>
+            <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Soup Kitchen</span>
+        </div>
+    </div>
     <div class="toggle-row" data-layer="fresh" data-color="#3a6ea8">
         <div class="toggle-dot" style="background:#3a6ea8"></div>
         <span class="toggle-label">FRESH Zoning</span>
+    </div>
+    <div id="fresh-legend" style="display:none; padding: 4px 14px 6px 16px; gap: 5px; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:7px;">
+            <div style="width:18px; height:8px; background:#5ab0e8; flex-shrink:0; opacity:0.65;"></div>
+            <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Zoning</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:7px;">
+            <div style="width:18px; height:8px; background:#3a6ea8; flex-shrink:0; opacity:0.65;"></div>
+            <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Tax Incentives</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:7px;">
+            <div style="width:18px; height:8px; background:#1a4a7a; flex-shrink:0; opacity:0.65;"></div>
+            <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Zoning + Tax</span>
+        </div>
     </div>
     <div class="toggle-row" data-layer="trucks" data-color="#48b06e">
         <div class="toggle-dot" style="background:#48b06e"></div>
@@ -193,10 +225,23 @@ const HOVER = {
         title: `ZIP ${p.zip}`,
         body:  `Heat Vulnerability Index: ${p.hvi} / 5`,
     }),
-    'food-sites-circle': p => ({
-        title: p.org_name || 'Food Site',
-        body:  [p.type, p.days, p.hours].filter(Boolean).join('\n'),
-    }),
+    'food-sites-circle': p => {
+        const typeLabels = {
+            'FP':   'Food Pantry',
+            'FPH':  'Food Pantry — Home Delivery',
+            'FPHA': 'Food Pantry — Home Delivery (Appt.)',
+            'FPK':  'Food Pantry — Kosher',
+            'FPM':  'Food Pantry — Mobile',
+            'FPV':  'Food Pantry — Various Locations',
+            'SK':   'Soup Kitchen',
+            'SKK':  'Soup Kitchen — Kosher',
+            'SKM':  'Soup Kitchen — Mobile',
+        };
+        return {
+            title: p.org_name || 'Food Site',
+            body:  [typeLabels[p.type] || p.type, p.days, p.hours].filter(Boolean).join('\n'),
+        };
+    },
     'fresh-fill':        p => ({
         title: 'FRESH Zone',
         body:  p.name || '—',
@@ -277,29 +322,47 @@ map.on('load', async () => {
         layout: { visibility: 'none' },
     });
 
-    // Emergency Food — circles
+    // Emergency Food — circles, colored by type group
     map.addLayer({
         id:     'food-sites-circle',
         type:   'circle',
         source: 'food-sites',
         paint:  {
-            'circle-color':        '#e879a0',
+            'circle-color': [
+                'match', ['get', 'type'],
+                'FP',   '#e879a0',
+                'FPH',  '#e879a0',
+                'FPHA', '#e879a0',
+                'FPV',  '#e879a0',
+                'FPK',  '#e84a6a',
+                'FPM',  '#ff9944',
+                'SK',   '#9b59b6',
+                'SKK',  '#9b59b6',
+                'SKM',  '#9b59b6',
+                '#888'
+            ],
             'circle-radius':       5,
-            'circle-opacity':      0.8,
-            'circle-stroke-color': 'rgba(232,121,160,0.3)',
+            'circle-opacity':      0.85,
+            'circle-stroke-color': 'rgba(232,228,220,0.15)',
             'circle-stroke-width': 1,
         },
         layout: { visibility: 'none' },
     });
 
-    // FRESH Zoning — fill
+    // FRESH Zoning — fill, colored by incentive type
     map.addLayer({
         id:     'fresh-fill',
         type:   'fill',
         source: 'fresh',
         paint:  {
-            'fill-color':   '#3a6ea8',
-            'fill-opacity': 0.6,
+            'fill-color': [
+                'match', ['get', 'name'],
+                'Zoning incentives',                          '#5ab0e8',
+                'Discretionary tax incentives',               '#3a6ea8',
+                'Zoning and discretionary tax incentives',    '#1a4a7a',
+                '#3a6ea8'
+            ],
+            'fill-opacity': 0.65,
         },
         layout: { visibility: 'none' },
     });
@@ -389,8 +452,9 @@ function syncTogglePanel() {
         row.classList.toggle('active', on);
         row.style.borderLeftColor = on ? color : 'transparent';
     });
-    const trucksLegend = document.getElementById('trucks-legend');
-    if (trucksLegend) trucksLegend.style.display = state['trucks'] ? 'flex' : 'none';
+    document.getElementById('trucks-legend').style.display     = state['trucks']     ? 'flex' : 'none';
+    document.getElementById('food-sites-legend').style.display = state['food-sites'] ? 'flex' : 'none';
+    document.getElementById('fresh-legend').style.display      = state['fresh']      ? 'flex' : 'none';
 }
 
 // ── Toggle panel clicks ────────────────────────────────────────────
