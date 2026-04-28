@@ -6,7 +6,7 @@
     <title>NYC Food Vulnerability Map</title>
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&family=Esteban&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -18,82 +18,15 @@
 
         #map { position: absolute; inset: 0; }
 
-        /* ── Story panel ── */
-        .story-panel {
-            position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 240px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            z-index: 10;
-            background: linear-gradient(to left,
-                rgba(8,12,20,0.92) 0%,
-                rgba(8,12,20,0.85) 100%);
-            border-left: 1px solid rgba(232,228,220,0.08);
-            scrollbar-width: thin;
-            scrollbar-color: rgba(232,228,220,0.1) transparent;
-        }
-
-        .story-panel::-webkit-scrollbar { width: 3px; }
-        .story-panel::-webkit-scrollbar-track { background: transparent; }
-        .story-panel::-webkit-scrollbar-thumb { background: rgba(232,228,220,0.1); }
-
-        .story-inner {
-            padding: 20px 0 40px;
-        }
-
-        .story-step {
-            min-height: 220px;
-            padding: 28px 22px 28px 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 10px;
-            border-left: 2px solid transparent;
-            transition: border-color 0.3s;
-            cursor: pointer;
-        }
-
-        .story-step.active {
-            border-left-color: rgba(232,228,220,0.25);
-        }
-
-        .step-num {
-            font-size: 0.55rem;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: rgba(232,228,220,0.2);
-            transition: color 0.3s;
-        }
-
-        .story-step.active .step-num {
-            color: rgba(232,228,220,0.45);
-        }
-
-        .step-text {
-            font-family: 'Esteban', serif;
-            font-style: italic;
-            font-size: 0.82rem;
-            line-height: 1.7;
-            color: rgba(232,228,220,0.2);
-            transition: color 0.35s;
-        }
-
-        .story-step.active .step-text {
-            color: rgba(232,228,220,0.88);
-        }
-
         /* ── Layer toggle panel ── */
         .toggle-panel {
             position: absolute;
-            bottom: 20px;
-            left: 16px;
+            top: 10px;
+            left: 10px;
             z-index: 10;
             background: rgba(8,12,20,0.92);
             border: 1px solid rgba(232,228,220,0.1);
-            padding: 12px 14px 10px;
+            padding: 10px 0 6px;
             min-width: 190px;
         }
 
@@ -102,16 +35,19 @@
             letter-spacing: 0.2em;
             text-transform: uppercase;
             color: rgba(232,228,220,0.25);
-            margin-bottom: 11px;
+            margin-bottom: 6px;
+            padding: 0 14px;
         }
 
         .toggle-row {
             display: flex;
             align-items: center;
             gap: 9px;
-            padding: 4px 0;
+            padding: 8px 14px;
             cursor: pointer;
             user-select: none;
+            border-left: 2px solid transparent;
+            transition: border-color 0.2s, background 0.2s;
         }
 
         .toggle-dot {
@@ -119,17 +55,17 @@
             height: 7px;
             border-radius: 50%;
             flex-shrink: 0;
-            opacity: 0.3;
+            opacity: 0.2;
             transition: opacity 0.2s;
         }
 
-        .toggle-row.active .toggle-dot { opacity: 1; }
+        .toggle-row.active .toggle-dot { opacity: 0; width: 0; gap: 0; }
 
         .toggle-label {
             font-size: 0.58rem;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            color: rgba(232,228,220,0.25);
+            color: rgba(232,228,220,0.3);
             transition: color 0.2s;
         }
 
@@ -163,7 +99,6 @@
             white-space: pre-line;
         }
 
-        /* Override Mapbox default styles */
         .mapboxgl-ctrl-attrib {
             font-family: 'IBM Plex Mono', monospace !important;
             font-size: 0.5rem !important;
@@ -176,62 +111,30 @@
 
 <div id="map"></div>
 
-<!-- Scroll story panel -->
-<div class="story-panel" id="story-panel">
-    <div class="story-inner">
-
-        <div class="story-step" data-step="1">
-            <span class="step-num">01 — Supply Gap</span>
-            <p class="step-text">Food does not arrive equally.</p>
-        </div>
-
-        <div class="story-step" data-step="2">
-            <span class="step-num">02 — Heat Vulnerability</span>
-            <p class="step-text">Heat compounds the pressure.</p>
-        </div>
-
-        <div class="story-step" data-step="3">
-            <span class="step-num">03 — Emergency Food</span>
-            <p class="step-text">Emergency food marks where the system has already failed.</p>
-        </div>
-
-        <div class="story-step" data-step="4">
-            <span class="step-num">04 — Infrastructure</span>
-            <p class="step-text">Infrastructure moves on fixed corridors.</p>
-        </div>
-
-        <div class="story-step" data-step="5">
-            <span class="step-num">05 — Red Hook</span>
-            <p class="step-text">Red Hook sits at the convergence.</p>
-        </div>
-
-    </div>
-</div>
-
 <!-- Layer toggle panel -->
 <div class="toggle-panel">
     <div class="toggle-panel-title">Layers</div>
-    <div class="toggle-row active" data-layer="supply-gap">
+    <div class="toggle-row" data-layer="supply-gap" data-color="#c44b2b">
         <div class="toggle-dot" style="background:#c44b2b"></div>
         <span class="toggle-label">Supply Gap</span>
     </div>
-    <div class="toggle-row" data-layer="heat">
+    <div class="toggle-row" data-layer="heat" data-color="#e8832a">
         <div class="toggle-dot" style="background:#e8832a"></div>
         <span class="toggle-label">Heat Vulnerability</span>
     </div>
-    <div class="toggle-row" data-layer="food-sites">
+    <div class="toggle-row" data-layer="food-sites" data-color="#e879a0">
         <div class="toggle-dot" style="background:#e879a0"></div>
         <span class="toggle-label">Emergency Food</span>
     </div>
-    <div class="toggle-row" data-layer="fresh">
+    <div class="toggle-row" data-layer="fresh" data-color="#3a6ea8">
         <div class="toggle-dot" style="background:#3a6ea8"></div>
         <span class="toggle-label">FRESH Zoning</span>
     </div>
-    <div class="toggle-row" data-layer="trucks">
+    <div class="toggle-row" data-layer="trucks" data-color="#48b06e">
         <div class="toggle-dot" style="background:#48b06e"></div>
         <span class="toggle-label">Truck Routes</span>
     </div>
-    <div class="toggle-row" data-layer="flood">
+    <div class="toggle-row" data-layer="flood" data-color="#2a4a8a">
         <div class="toggle-dot" style="background:#2a4a8a"></div>
         <span class="toggle-label">Flood Risk</span>
     </div>
@@ -246,13 +149,9 @@
 <script>
 mapboxgl.accessToken = 'pk.eyJ1Ijoic3VubmlodSIsImEiOiJjbWxwZmh6NDAxY200M2dvb2VlMzZ2aTM4In0.Xq6Z1l7EMA4II91mAAhyTw';
 
-// ── URL params ─────────────────────────────────────────────────────
-const params       = new URLSearchParams(window.location.search);
-const startRedHook = params.get('zoom') === 'redhook';
-
-// ── Layer state ────────────────────────────────────────────────────
+// ── Layer state — all off by default ──────────────────────────────
 const state = {
-    'supply-gap': true,
+    'supply-gap': false,
     'heat':       false,
     'food-sites': false,
     'fresh':      false,
@@ -260,7 +159,6 @@ const state = {
     'flood':      false,
 };
 
-// Map layer-key → Mapbox layer IDs
 const LAYER_IDS = {
     'supply-gap': ['supply-gap-fill'],
     'heat':       ['heat-fill'],
@@ -270,58 +168,29 @@ const LAYER_IDS = {
     'flood':      ['flood-fill'],
 };
 
-// ── Story steps ────────────────────────────────────────────────────
-const STEPS = [
-    {
-        show: ['supply-gap'],
-        hide: ['heat', 'food-sites', 'fresh', 'trucks', 'flood'],
-        fly:  null,
-    },
-    {
-        show: ['supply-gap', 'heat'],
-        hide: ['food-sites', 'fresh', 'trucks', 'flood'],
-        fly:  null,
-    },
-    {
-        show: ['supply-gap', 'heat', 'food-sites'],
-        hide: ['fresh', 'trucks', 'flood'],
-        fly:  null,
-    },
-    {
-        show: ['supply-gap', 'heat', 'food-sites', 'fresh', 'trucks'],
-        hide: ['flood'],
-        fly:  null,
-    },
-    {
-        show: ['supply-gap', 'heat', 'food-sites', 'fresh', 'trucks', 'flood'],
-        hide: [],
-        fly:  { center: [-74.0099, 40.6741], zoom: 14, duration: 2200 },
-    },
-];
-
 // ── Tooltip formatters ─────────────────────────────────────────────
 const HOVER = {
-    'supply-gap-fill':    p => ({
+    'supply-gap-fill':   p => ({
         title: p.nta_name || 'NTA',
         body:  `Supply gap: ${p.supply_gap_lbs || '—'}\nFood insecure: ${p.food_insecure_percentage || '—'}`,
     }),
-    'heat-fill':          p => ({
+    'heat-fill':         p => ({
         title: `ZIP ${p.zip}`,
         body:  `Heat Vulnerability Index: ${p.hvi} / 5`,
     }),
-    'food-sites-circle':  p => ({
+    'food-sites-circle': p => ({
         title: p.org_name || 'Food Site',
         body:  [p.type, p.days, p.hours].filter(Boolean).join('\n'),
     }),
-    'fresh-fill':         p => ({
+    'fresh-fill':        p => ({
         title: 'FRESH Zone',
         body:  p.name || '—',
     }),
-    'trucks-line':        p => ({
+    'trucks-line':       p => ({
         title: p.street || 'Truck Route',
         body:  [p.routetype, p.boroname].filter(Boolean).join(' — '),
     }),
-    'flood-fill':         p => ({
+    'flood-fill':        p => ({
         title: 'Flood Risk',
         body:  `Category ${p.Flooding_Category || '—'}`,
     }),
@@ -332,14 +201,12 @@ const map = new mapboxgl.Map({
     container: 'map',
     style:     'mapbox://styles/mapbox/dark-v11',
     bounds:    [[-74.25, 40.48], [-73.68, 40.92]],
-    fitBoundsOptions: { padding: { top: 30, bottom: 30, left: 30, right: 260 } },
+    fitBoundsOptions: { padding: 30 },
 });
 
-map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-left');
 
 map.on('load', async () => {
 
-    // ── Fetch all GeoJSON ──────────────────────────────────────────
     const FILES = {
         'supply-gap': 'data/nta_supply_gap_2024.geojson',
         'heat':       'data/Heat_Vulnerability_Index_Rankings_20260216.geojson',
@@ -360,8 +227,6 @@ map.on('load', async () => {
         })
     );
 
-    // ── Add layers ─────────────────────────────────────────────────
-
     // Supply Gap — choropleth fill (log_gap range 4.118–6.631)
     map.addLayer({
         id:     'supply-gap-fill',
@@ -377,7 +242,7 @@ map.on('load', async () => {
             ],
             'fill-opacity': 1,
         },
-        layout: { visibility: 'visible' },
+        layout: { visibility: 'none' },
     });
 
     // Heat Vulnerability — fill (hvi 1–5)
@@ -403,9 +268,9 @@ map.on('load', async () => {
         type:   'circle',
         source: 'food-sites',
         paint:  {
-            'circle-color':   '#e879a0',
-            'circle-radius':  5,
-            'circle-opacity': 0.8,
+            'circle-color':        '#e879a0',
+            'circle-radius':       5,
+            'circle-opacity':      0.8,
             'circle-stroke-color': 'rgba(232,121,160,0.3)',
             'circle-stroke-width': 1,
         },
@@ -470,8 +335,8 @@ map.on('load', async () => {
             const rect = mapEl.getBoundingClientRect();
             const x    = e.originalEvent.clientX - rect.left + 14;
             const y    = e.originalEvent.clientY - rect.top  - 48;
-            tooltip.style.left = Math.min(x, rect.width  - 240) + 'px';
-            tooltip.style.top  = Math.max(y, 6)           + 'px';
+            tooltip.style.left = Math.min(x, rect.width - 240) + 'px';
+            tooltip.style.top  = Math.max(y, 6)                + 'px';
             map.getCanvas().style.cursor = 'crosshair';
         });
 
@@ -480,32 +345,9 @@ map.on('load', async () => {
             map.getCanvas().style.cursor = '';
         });
     });
-
-    // ── Initial state ──────────────────────────────────────────────
-    if (startRedHook) {
-        applyStep(STEPS[4]);
-        setActiveStory(5);
-        map.jumpTo({ center: [-74.0099, 40.6741], zoom: 14 });
-    } else {
-        applyStep(STEPS[0]);
-        setActiveStory(1);
-    }
-
-    syncTogglePanel();
 });
 
-// ── Apply a step ───────────────────────────────────────────────────
-function applyStep(step) {
-    step.show.forEach(key => setLayer(key, true));
-    step.hide.forEach(key => setLayer(key, false));
-
-    if (step.fly) {
-        map.flyTo({ ...step.fly, essential: true });
-    }
-
-    syncTogglePanel();
-}
-
+// ── Layer helpers ──────────────────────────────────────────────────
 function setLayer(key, on) {
     state[key] = on;
     (LAYER_IDS[key] || []).forEach(id => {
@@ -515,54 +357,19 @@ function setLayer(key, on) {
     });
 }
 
-function setActiveStory(stepNum) {
-    document.querySelectorAll('.story-step').forEach(el => {
-        el.classList.toggle('active', +el.dataset.step === stepNum);
-    });
-}
-
 function syncTogglePanel() {
     document.querySelectorAll('.toggle-row').forEach(row => {
-        row.classList.toggle('active', !!state[row.dataset.layer]);
+        const on    = !!state[row.dataset.layer];
+        const color = row.dataset.color;
+        row.classList.toggle('active', on);
+        row.style.borderLeftColor = on ? color : 'transparent';
     });
 }
 
-// ── Scroll story ───────────────────────────────────────────────────
-let activeStep = 1;
-const storyPanel = document.getElementById('story-panel');
-
-const stepObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const stepNum = +entry.target.dataset.step;
-        if (stepNum === activeStep) return;
-        activeStep = stepNum;
-        applyStep(STEPS[stepNum - 1]);
-        setActiveStory(stepNum);
-    });
-}, {
-    root:      storyPanel,
-    threshold: 0.55,
-});
-
-document.querySelectorAll('.story-step').forEach(el => {
-    stepObserver.observe(el);
-
-    // Click to jump
-    el.addEventListener('click', () => {
-        const stepNum = +el.dataset.step;
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        activeStep = stepNum;
-        applyStep(STEPS[stepNum - 1]);
-        setActiveStory(stepNum);
-    });
-});
-
-// ── Toggle panel ───────────────────────────────────────────────────
+// ── Toggle panel clicks ────────────────────────────────────────────
 document.querySelectorAll('.toggle-row').forEach(row => {
     row.addEventListener('click', () => {
-        const key = row.dataset.layer;
-        setLayer(key, !state[key]);
+        setLayer(row.dataset.layer, !state[row.dataset.layer]);
         syncTogglePanel();
     });
 });
