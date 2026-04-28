@@ -290,7 +290,7 @@
             <div class="wide-col fade-in" style="position: relative; z-index: 1;">
                 <h2>Limited Agency and Presence</h2>
                 <p>Interaction within the environment is deliberately constrained.</p>
-                <p>Drawing from Flanagan's <span class="book-ref" data-cover="images/readings/Critical Play.jpg">Critical Play</span> and Bishop's <em>Artificial Hells</em>, the project resists the assumption that participation inherently produces agency. To be present within a system is not to control it. Users navigate, observe, and uncover, but they do not alter what they find. The conditions of the environment are fixed.</p>
+                <p>Drawing from Flanagan's <span class="book-ref" data-cover="images/readings/Critical Play.jpg">Critical Play</span> and Bishop's <span class="book-ref" data-cover="images/readings/Artificial Hells.jpg">Artificial Hells</span>, the project resists the assumption that participation inherently produces agency. To be present within a system is not to control it. Users navigate, observe, and uncover, but they do not alter what they find. The conditions of the environment are fixed.</p>
                 <p>This creates a specific tension between presence and power: users are positioned within the system, made to move through it and encounter its logic, but cannot reshape it. This is intentional. It is an invitation to notice, to recognize that the systems shaping food access in Red Hook — and across the city — are not fixed by nature. They are the result of decisions made across planning, logistics, and policy, and could be otherwise.</p>
             </div>
         </section>
@@ -326,8 +326,8 @@
             <div style="position: absolute; inset: 0; background: rgba(8,12,20,0.45); z-index: 1; pointer-events: none;"></div>
 
             <!-- Text — matches section padding: 8rem 5% -->
-            <div style="position: absolute; bottom: 8rem; left: 5%; right: 5%; z-index: 2; pointer-events: none; max-width: 560px;">
-                <div class="fade-in">
+            <div style="position: absolute; bottom: 8rem; left: 0; right: 0; padding: 0 5%; z-index: 2; pointer-events: none;">
+                <div class="wide-col fade-in">
                     <h2>The Limits of Representation</h2>
                     <p>Not all of the food system can be fully represented, and the project does not try to.</p>
                     <p>As Nora N. Khan argues, computational systems cannot capture subjective and situated experience, the texture of living within conditions that a diagram can only approximate. The project works with this limitation, treating incompleteness not as a failure but as an honest account of what representation can do.</p>
@@ -683,6 +683,29 @@
           }, index * 300);
         });
       })();
+    </script>
+
+    <script>
+    const bookCursor    = document.getElementById('book-cursor');
+    const bookCursorImg = document.getElementById('book-cursor-img');
+
+    document.addEventListener('mousemove', (e) => {
+        bookCursor.style.left = (e.clientX + 20) + 'px';
+        bookCursor.style.top  = (e.clientY - 10) + 'px';
+    });
+
+    document.querySelectorAll('.book-ref').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            const cover = el.dataset.cover;
+            if (cover) {
+                bookCursorImg.src        = cover;
+                bookCursor.style.opacity = '1';
+            }
+        });
+        el.addEventListener('mouseleave', () => {
+            bookCursor.style.opacity = '0';
+        });
+    });
     </script>
 
 </body>
