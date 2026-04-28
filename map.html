@@ -217,10 +217,16 @@ const LAYER_IDS = {
 
 // ── Tooltip formatters ─────────────────────────────────────────────
 const HOVER = {
-    'supply-gap-fill':   p => ({
-        title: p.nta_name || 'NTA',
-        body:  `Supply gap: ${p.supply_gap_lbs || '—'}\nFood insecure: ${p.food_insecure_percentage || '—'}`,
-    }),
+    'supply-gap-fill': p => {
+        const lbs    = parseFloat((p.supply_gap_lbs || '').replace(/,/g, ''));
+        const tons   = isFinite(lbs) ? Math.round(lbs / 2000).toLocaleString() : null;
+        const pctRaw = parseFloat((p.food_insecure_percentage || '').replace('%', ''));
+        const ratio  = isFinite(pctRaw) && pctRaw > 0 ? Math.round(100 / pctRaw) : null;
+        const parts  = [];
+        if (ratio) parts.push(`1 in ${ratio} residents faces food insecurity`);
+        if (tons)  parts.push(`~${tons} tons of food unmet per year`);
+        return { title: p.nta_name || 'NTA', body: parts.join('\n') || '—' };
+    },
     'heat-fill':         p => ({
         title: `ZIP ${p.zip}`,
         body:  `Heat Vulnerability Index: ${p.hvi} / 5`,
