@@ -488,15 +488,21 @@ details.data-panel summary:hover { color: var(--text); }
     transition: width 0.12s linear;
 }
 
+@keyframes hint-nudge {
+    0%, 100% { transform: translateX(0);   opacity: 0.5; }
+    50%       { transform: translateX(5px); opacity: 1;   }
+}
+
 .gallery-scroll-hint {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.46rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(232,228,220,0.28);
+    color: var(--pink);
     flex-shrink: 0;
     white-space: nowrap;
     transition: opacity 0.8s;
+    animation: hint-nudge 2.4s ease-in-out infinite;
 }
 
 .gallery-item {
@@ -558,12 +564,34 @@ details.data-panel summary:hover { color: var(--text); }
     left: 0;
 }
 
+@keyframes arrow-nudge {
+    0%, 100% { transform: translateX(0);  }
+    50%       { transform: translateX(5px); }
+}
+
+@keyframes border-breathe {
+    0%, 100% { opacity: 0.5; }
+    50%       { opacity: 1;   }
+}
+
+.unity-enter {
+    border-bottom-color: var(--pink);
+    animation: border-breathe 2.4s ease-in-out infinite;
+}
+
 .unity-enter .enter-arrow {
     transition: transform 0.2s ease;
+    animation: arrow-nudge 2.4s ease-in-out infinite;
+}
+
+.unity-enter:hover {
+    animation: none;
+    border-bottom-color: var(--text);
 }
 
 .unity-enter:hover .enter-arrow {
-    transform: translateX(4px);
+    animation: none;
+    transform: translateX(6px);
 }
 
 .unity-center {
