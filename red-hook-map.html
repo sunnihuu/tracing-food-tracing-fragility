@@ -68,15 +68,25 @@
       position: fixed;
       pointer-events: none;
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      color: rgba(232,228,220,0.85);
-      background: #0d1420;
-      border: 1px solid rgba(232,228,220,0.15);
-      padding: 0.7rem 1rem;
-      line-height: 1.8;
-      display: none;
+      background: rgba(8,12,20,0.97);
+      border: 1px solid rgba(232,228,220,0.1);
+      padding: 8px 12px;
       z-index: 30;
-      max-width: 260px;
+      max-width: 220px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .tip-title {
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #e8e4dc;
+      margin-bottom: 4px;
+    }
+    .tip-body {
+      font-size: 0.56rem;
+      line-height: 1.6;
+      color: rgba(232,228,220,0.45);
     }
 
   </style>
@@ -84,7 +94,10 @@
 <body>
 
   <div id="map"></div>
-  <div id="tooltip"></div>
+  <div id="tooltip">
+    <div class="tip-title" id="tip-title"></div>
+    <div class="tip-body"  id="tip-body"></div>
+  </div>
 
   <div id="controls">
     <div class="group-label">Flood</div>
@@ -215,51 +228,44 @@
     }
 
     // ── Tooltip ───────────────────────────────────────────────────
-    const tooltip = document.getElementById('tooltip');
+    const tooltip  = document.getElementById('tooltip');
+    const tipTitle = document.getElementById('tip-title');
+    const tipBody  = document.getElementById('tip-body');
 
     function initTooltip() {
       map.on('mousemove', e => {
-        const pt = e.point;
-
-        const indF  = state.industrial  ? map.queryRenderedFeatures(pt, { layers: [LAYER.industrial]  }) : [];
-        const resF  = state.residential ? map.queryRenderedFeatures(pt, { layers: [LAYER.residential] }) : [];
-        const comF  = state.commercial  ? map.queryRenderedFeatures(pt, { layers: [LAYER.commercial]  }) : [];
-        const sndF  = state.sandy       ? map.queryRenderedFeatures(pt, { layers: [LAYER.sandy]       }) : [];
-        const fldF  = state.flood       ? map.queryRenderedFeatures(pt, { layers: [LAYER.flood]       }) : [];
+        const pt   = e.point;
+        const indF = state.industrial  ? map.queryRenderedFeatures(pt, { layers: [LAYER.industrial]  }) : [];
+        const resF = state.residential ? map.queryRenderedFeatures(pt, { layers: [LAYER.residential] }) : [];
+        const comF = state.commercial  ? map.queryRenderedFeatures(pt, { layers: [LAYER.commercial]  }) : [];
+        const sndF = state.sandy       ? map.queryRenderedFeatures(pt, { layers: [LAYER.sandy]       }) : [];
+        const fldF = state.flood       ? map.queryRenderedFeatures(pt, { layers: [LAYER.flood]       }) : [];
 
         if (!indF.length && !resF.length && !comF.length && !sndF.length && !fldF.length) {
-          tooltip.style.display = 'none';
+          tooltip.style.opacity = '0';
           return;
         }
 
-        const lines = [];
+        // Title: land use type(s)
+        const uses = [];
+        if (indF.length) uses.push('Industrial');
+        if (resF.length) uses.push('Residential');
+        if (comF.length) uses.push('Commercial');
+        tipTitle.textContent = uses.length ? uses.join(' · ') : 'Red Hook';
 
-        // Land use
-        if (indF.length)  lines.push('// Industrial');
-        if (resF.length)  lines.push('// Residential');
-        if (comF.length)  lines.push('// Commercial');
+        // Body: flood exposure
+        const flood = [];
+        if (sndF.length) flood.push('Sandy inundation zone');
+        if (fldF.length) flood.push('Floodplain 2050s');
+        tipBody.textContent = flood.length ? flood.join('\n') : 'No flood exposure mapped';
 
-        // Flood exposure
-        if (sndF.length && fldF.length) {
-          lines.push('// sandy inundation + floodplain 2050s');
-        } else if (sndF.length) {
-          lines.push('// sandy inundation zone');
-        } else if (fldF.length) {
-          lines.push('// floodplain 2050s');
-        } else {
-          lines.push('// no flood exposure');
-        }
-
-        lines.push('// these conditions occupy the same ground');
-
-        tooltip.innerHTML     = lines.join('<br>');
-        tooltip.style.display = 'block';
+        tooltip.style.opacity = '1';
         tooltip.style.left    = (e.originalEvent.clientX + 14) + 'px';
         tooltip.style.top     = (e.originalEvent.clientY  - 10) + 'px';
       });
 
       map.getCanvas().addEventListener('mouseleave', () => {
-        tooltip.style.display = 'none';
+        tooltip.style.opacity = '0';
       });
     }
   </script>

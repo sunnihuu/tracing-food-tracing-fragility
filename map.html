@@ -118,9 +118,21 @@
         <div class="toggle-dot" style="background:#c44b2b"></div>
         <span class="toggle-label">Supply Gap</span>
     </div>
+    <div id="supply-gap-legend" style="display:none; padding: 4px 14px 6px 16px;">
+        <div style="height:4px; background:linear-gradient(to right, rgba(8,12,20,0.2), rgba(80,20,15,0.6), rgba(150,40,25,0.85), rgba(196,75,43,1)); margin-bottom:4px;"></div>
+        <div style="display:flex; justify-content:space-between; font-size:0.42rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.3);">
+            <span>Smaller gap</span><span>Larger gap</span>
+        </div>
+    </div>
     <div class="toggle-row" data-layer="heat" data-color="#e8832a">
         <div class="toggle-dot" style="background:#e8832a"></div>
         <span class="toggle-label">Heat Vulnerability</span>
+    </div>
+    <div id="heat-legend" style="display:none; padding: 4px 14px 6px 16px;">
+        <div style="height:4px; background:linear-gradient(to right, #1a1a2e, #a0561a, #e8832a); margin-bottom:4px;"></div>
+        <div style="display:flex; justify-content:space-between; font-size:0.42rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.3);">
+            <span>Lower risk</span><span>Higher risk</span>
+        </div>
     </div>
     <div class="toggle-row" data-layer="food-sites" data-color="#e879a0">
         <div class="toggle-dot" style="background:#e879a0"></div>
@@ -180,9 +192,19 @@
             <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Limited Local</span>
         </div>
     </div>
-    <div class="toggle-row" data-layer="flood" data-color="#2a4a8a">
-        <div class="toggle-dot" style="background:#2a4a8a"></div>
+    <div class="toggle-row" data-layer="flood" data-color="#4a7fc1">
+        <div class="toggle-dot" style="background:#4a7fc1"></div>
         <span class="toggle-label">Flood Risk</span>
+    </div>
+    <div id="flood-legend" style="display:none; padding: 4px 14px 6px 16px; gap: 5px; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:7px;">
+            <div style="width:18px; height:8px; background:#4a7fc1; flex-shrink:0; opacity:0.8;"></div>
+            <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Nuisance Flooding</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:7px;">
+            <div style="width:18px; height:8px; background:#0d2152; flex-shrink:0; opacity:0.9;"></div>
+            <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Deep & Contiguous</span>
+        </div>
     </div>
     <div style="padding: 0 14px; margin-top: 10px; font-size: 0.5rem; color: rgba(232,228,220,0.2); font-family: 'IBM Plex Mono', monospace;">// select a layer to explore</div>
 </div>
@@ -216,6 +238,8 @@ const LAYER_IDS = {
 };
 
 // ── Tooltip formatters ─────────────────────────────────────────────
+const ZIP_NEIGHBORHOOD = {"10001":"Chelsea-Hudson Yards","10002":"Lower East Side","10003":"East Village","10026":"Harlem (South)","10004":"Financial District-Battery Park City","10005":"Financial District-Battery Park City","10006":"Financial District-Battery Park City","10007":"Tribeca-Civic Center","10009":"East Village","10010":"Gramercy","10011":"Chelsea-Hudson Yards","10012":"SoHo-Little Italy-Hudson Square","10013":"Tribeca-Civic Center","10014":"West Village","10016":"Murray Hill-Kips Bay","10017":"East Midtown-Turtle Bay","10018":"Hell's Kitchen","10030":"Harlem (North)","10019":"Hell's Kitchen","10021":"Upper East Side-Lenox Hill-Roosevelt Island","10022":"East Midtown-Turtle Bay","10023":"Upper West Side-Lincoln Square","10024":"Upper West Side (Central)","10025":"Upper West Side-Manhattan Valley","10027":"Morningside Heights","10028":"Upper East Side-Yorkville","10029":"East Harlem (South)","10031":"Hamilton Heights-Sugar Hill","10032":"Washington Heights (South)","10033":"Washington Heights (North)","10034":"Inwood","10037":"East Harlem (North)","10035":"East Harlem (North)","10036":"Hell's Kitchen","10038":"Financial District-Battery Park City","10040":"Washington Heights (North)","11104":"Sunnyside","11105":"Astoria (North)-Ditmars-Steinway","10039":"Harlem (North)","10128":"Upper East Side-Yorkville","10044":"Upper East Side-Lenox Hill-Roosevelt Island","10065":"Upper East Side-Lenox Hill-Roosevelt Island","10069":"Upper West Side-Lincoln Square","10075":"Upper East Side-Lenox Hill-Roosevelt Island","10280":"Financial District-Battery Park City","10282":"Financial District-Battery Park City","10301":"West New Brighton-Silver Lake-Grymes Hill","11106":"Queensbridge-Ravenswood-Dutch Kills","10302":"Port Richmond","10303":"Mariner's Harbor-Arlington-Graniteville","10304":"Todt Hill-Emerson Hill-Lighthouse Hill-Manor Heights","10451":"Concourse-Concourse Village","10305":"Grasmere-Arrochar-South Beach-Dongan Hills","10306":"Oakwood-Richmondtown","10307":"Tottenville-Charleston","10308":"Great Kills-Eltingville","10309":"Annadale-Huguenot-Prince's Bay-Woodrow","10310":"West New Brighton-Silver Lake-Grymes Hill","10312":"Annadale-Huguenot-Prince's Bay-Woodrow","10314":"New Springville-Willowbrook-Bulls Head-Travis","10456":"Morrisania","10452":"Highbridge","10453":"University Heights (South)-Morris Heights","10454":"Mott Haven-Port Morris","10455":"Melrose","10457":"Tremont","10458":"Belmont","10459":"Longwood","10460":"West Farms","10461":"Hutchinson Metro Center","11004":"Glen Oaks-Floral Park-New Hyde Park","11101":"Long Island City-Hunters Point","10462":"Pelham Parkway-Van Nest","10463":"Kingsbridge-Marble Hill","10464":"Pelham Bay Park","10465":"Throgs Neck-Schuylerville","10466":"Eastchester-Edenwald-Baychester","10467":"Woodlawn Cemetery","10468":"Kingsbridge Heights-Van Cortlandt Village","10469":"Pelham Gardens","10470":"Woodlawn Cemetery","11102":"Old Astoria-Hallets Point","11109":"Long Island City-Hunters Point","10471":"Riverdale-Spuyten Duyvil","10472":"Soundview-Bruckner-Bronx River","10473":"Soundview-Clason Point","10474":"Hunts Point","11103":"Astoria (East)-Woodside (North)","10475":"Co-op City","11201":"Downtown Brooklyn-DUMBO-Boerum Hill","11203":"East Flatbush-Rugby","11204":"Mapleton-Midwood (West)","11205":"Clinton Hill","11206":"East Williamsburg","11207":"East New York (North)","11209":"Bay Ridge","11208":"East New York-City Line","11210":"Flatlands","11211":"Williamsburg","11212":"Brownsville","11213":"Crown Heights (North)","11218":"Kensington","11214":"Gravesend (West)","11215":"Windsor Terrace-South Slope","11216":"Bedford-Stuyvesant (West)","11217":"Park Slope","11219":"Borough Park","11220":"Sunset Park (West)","11221":"Bedford-Stuyvesant (East)","11222":"Greenpoint","11223":"Gravesend (West)","11224":"Coney Island-Sea Gate","11225":"Prospect Lefferts Gardens-Wingate","11226":"Flatbush","11228":"Dyker Heights","11230":"Mapleton-Midwood (West)","11415":"Kew Gardens","11229":"Madison","11231":"Carroll Gardens-Cobble Hill-Gowanus-Red Hook","11358":"Murray Hill-Broadway Flushing","11232":"Sunset Park (West)","11233":"Ocean Hill","11234":"Marine Park-Mill Basin-Bergen Beach","11235":"Sheepshead Bay-Manhattan Beach-Gerritsen Beach","11236":"Canarsie","11237":"Bushwick (West)","11238":"Prospect Heights","11239":"Spring Creek-Starrett City","11354":"Flushing-Willets Point","11355":"East Flushing","11356":"College Point","11357":"Whitestone-Beechhurst","11360":"Bay Terrace-Clearview","11372":"Jackson Heights","11361":"Bayside","11362":"Douglaston-Little Neck","11416":"Ozone Park (North)","11363":"Douglaston-Little Neck","11364":"Oakland Gardens-Hollis Hills","11373":"Elmhurst","11365":"Auburndale","11366":"Fresh Meadows-Utopia","11367":"Kew Gardens Hills","11374":"Rego Park","11368":"Corona","11417":"Ozone Park","11369":"East Elmhurst","11370":"LaGuardia Airport","11375":"Forest Hills","11379":"Middle Village","11377":"Woodside","11378":"Maspeth","11421":"Woodhaven","11422":"Rosedale","11385":"Glendale","11411":"Cambria Heights","11412":"St. Albans","11413":"Laurelton","11414":"Howard Beach-Lindenwood","11420":"South Ozone Park","11418":"Richmond Hill","11419":"South Richmond Hill","11423":"Hollis","11426":"Bellerose","11427":"Bellerose","11428":"Queens Village","11436":"Baisley Park","11691":"Far Rockaway-Bayswater","11692":"Rockaway Beach-Arverne-Edgemere","11693":"Jamaica Bay (East)","11429":"Queens Village","11432":"Jamaica Hills-Briarwood","11433":"South Jamaica","11434":"John F. Kennedy International Airport","11435":"Jamaica","11694":"Breezy Point-Belle Harbor-Rockaway Park-Broad Channel","11697":"Jacob Riis Park-Fort Tilden-Breezy Point Tip"};
+
 const HOVER = {
     'supply-gap-fill': p => {
         const lbs    = parseFloat((p.supply_gap_lbs || '').replace(/,/g, ''));
@@ -227,8 +251,8 @@ const HOVER = {
         if (tons)  parts.push(`~${tons} tons of food unmet per year`);
         return { title: p.nta_name || 'NTA', body: parts.join('\n') || '—' };
     },
-    'heat-fill':         p => ({
-        title: `ZIP ${p.zip}`,
+    'heat-fill': p => ({
+        title: ZIP_NEIGHBORHOOD[p.zip] || `ZIP ${p.zip}`,
         body:  `Heat Vulnerability Index: ${p.hvi} / 5`,
     }),
     'food-sites-circle': p => {
@@ -256,10 +280,14 @@ const HOVER = {
         title: p.street || 'Truck Route',
         body:  [p.routetype, p.boroname].filter(Boolean).join('\n'),
     }),
-    'flood-fill':        p => ({
-        title: 'Flood Risk',
-        body:  `Category ${p.Flooding_Category || '—'}`,
-    }),
+    'flood-fill': p => {
+        const labels = {
+            1: { name: 'Nuisance Flooding',           desc: 'Shallow street-level pooling, low structural risk' },
+            2: { name: 'Deep & Contiguous Flooding',  desc: 'Exceeds 4 inches — water enters buildings' },
+        };
+        const cat = labels[p.Flooding_Category] || { name: 'Flood Zone', desc: '—' };
+        return { title: cat.name, body: cat.desc };
+    },
 };
 
 // ── Map init ───────────────────────────────────────────────────────
@@ -399,11 +427,12 @@ map.on('load', async () => {
         source: 'flood',
         paint:  {
             'fill-color': [
-                'interpolate', ['linear'], ['get', 'flood_score'],
-                1, '#1e3060',
-                2, '#2a4a8a',
+                'match', ['get', 'Flooding_Category'],
+                1, '#4a7fc1',
+                2, '#0d2152',
+                '#2a4a8a'
             ],
-            'fill-opacity': 0.55,
+            'fill-opacity': 0.6,
         },
         layout: { visibility: 'none' },
     });
@@ -458,9 +487,12 @@ function syncTogglePanel() {
         row.classList.toggle('active', on);
         row.style.borderLeftColor = on ? color : 'transparent';
     });
-    document.getElementById('trucks-legend').style.display     = state['trucks']     ? 'flex' : 'none';
-    document.getElementById('food-sites-legend').style.display = state['food-sites'] ? 'flex' : 'none';
-    document.getElementById('fresh-legend').style.display      = state['fresh']      ? 'flex' : 'none';
+    document.getElementById('supply-gap-legend').style.display = state['supply-gap'] ? 'block' : 'none';
+    document.getElementById('heat-legend').style.display       = state['heat']       ? 'block' : 'none';
+    document.getElementById('trucks-legend').style.display     = state['trucks']     ? 'flex'  : 'none';
+    document.getElementById('food-sites-legend').style.display = state['food-sites'] ? 'flex'  : 'none';
+    document.getElementById('fresh-legend').style.display      = state['fresh']      ? 'flex'  : 'none';
+    document.getElementById('flood-legend').style.display      = state['flood']      ? 'flex'  : 'none';
 }
 
 // ── Toggle panel clicks ────────────────────────────────────────────
