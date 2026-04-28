@@ -178,7 +178,7 @@ section h2 {
     z-index: 3;
     text-align: center;
     padding: 0 5%;
-    margin-top: -10px;
+    transform: translateY(-50px) !important;
 }
 
 .opening-eyebrow {
@@ -473,6 +473,7 @@ details.data-panel summary:hover { color: var(--text); }
     gap: 1.2rem;
     margin-top: 0.75rem;
 }
+
 
 .gallery-progress-track {
     flex: 1;
@@ -993,10 +994,12 @@ footer p {
 
 /* ── Photo mosaic (Investigative Aesthetics) ──────────── */
 .mosaic-cell {
-    aspect-ratio: 1 / 1;
     width: 100%;
     overflow: hidden;
     position: relative;
     background-size: cover;
     background-position: center;
+}
+.photo-mosaic {
+    grid-auto-rows: 180px; /* or 20vh for responsive */
 }
