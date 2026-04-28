@@ -144,21 +144,21 @@
             <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Soup Kitchen</span>
         </div>
     </div>
-    <div class="toggle-row" data-layer="fresh" data-color="#3a6ea8">
-        <div class="toggle-dot" style="background:#3a6ea8"></div>
+    <div class="toggle-row" data-layer="fresh" data-color="#c8a84b">
+        <div class="toggle-dot" style="background:#c8a84b"></div>
         <span class="toggle-label">FRESH Zoning</span>
     </div>
     <div id="fresh-legend" style="display:none; padding: 4px 14px 6px 16px; gap: 5px; flex-direction:column;">
         <div style="display:flex; align-items:center; gap:7px;">
-            <div style="width:18px; height:8px; background:#5ab0e8; flex-shrink:0; opacity:0.65;"></div>
+            <div style="width:18px; height:8px; background:#c8a84b; flex-shrink:0; opacity:0.65;"></div>
             <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Zoning</span>
         </div>
         <div style="display:flex; align-items:center; gap:7px;">
-            <div style="width:18px; height:8px; background:#3a6ea8; flex-shrink:0; opacity:0.65;"></div>
+            <div style="width:18px; height:8px; background:#4bc8a8; flex-shrink:0; opacity:0.65;"></div>
             <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Tax Incentives</span>
         </div>
         <div style="display:flex; align-items:center; gap:7px;">
-            <div style="width:18px; height:8px; background:#1a4a7a; flex-shrink:0; opacity:0.65;"></div>
+            <div style="width:18px; height:8px; background:#c84b8a; flex-shrink:0; opacity:0.65;"></div>
             <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Zoning + Tax</span>
         </div>
     </div>
@@ -357,10 +357,10 @@ map.on('load', async () => {
         paint:  {
             'fill-color': [
                 'match', ['get', 'name'],
-                'Zoning incentives',                          '#5ab0e8',
-                'Discretionary tax incentives',               '#3a6ea8',
-                'Zoning and discretionary tax incentives',    '#1a4a7a',
-                '#3a6ea8'
+                'Zoning incentives',                          '#c8a84b',
+                'Discretionary tax incentives',               '#4bc8a8',
+                'Zoning and discretionary tax incentives',    '#c84b8a',
+                '#888'
             ],
             'fill-opacity': 0.65,
         },
