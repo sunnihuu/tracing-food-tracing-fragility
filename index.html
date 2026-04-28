@@ -8,6 +8,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Esteban&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        body { cursor: crosshair; }
+        .book-ref {
+            font-style: italic;
+            cursor: none;
+            border-bottom: 1px solid rgba(232,228,220,0.15);
+            transition: border-color 0.2s ease;
+        }
+        .book-ref:hover {
+            border-bottom-color: rgba(232,228,220,0.5);
+        }
+    </style>
     <script type="importmap">
     {
         "imports": {
@@ -18,6 +30,24 @@
     </script>
 </head>
 <body>
+
+<div id="book-cursor" style="
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  width: 80px;
+  height: 110px;
+">
+  <img id="book-cursor-img" style="
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border: 1px solid rgba(232,228,220,0.15);
+  ">
+</div>
 
     <!--==============================================================
     OPENING — full screen, no nav, one Unity screenshot background
@@ -97,7 +127,7 @@
                     <div>
                         <h2>Spatializing Vulnerability</h2>
                         <p>This line of inquiry extends into the city. I developed a Food Vulnerability Index to examine how food stability varies across neighborhoods in New York City, drawing together three dimensions: economic pressure, consumption intensity, and household storage capacity. The aim was to surface patterns of dependency that might otherwise remain invisible.</p>
-                        <p>Reading <em>Data Feminism</em> (D'Ignazio and Klein) informed this process directly. Their argument that data reflects decisions, priorities, and omissions rather than neutral facts reshaped how I approached the index. The map is a constructed lens, one that illuminates certain relationships while inevitably casting others into shadow.</p>
+                        <p>Reading <span class="book-ref" data-cover="images/readings/Data Feminism.jpg">Data Feminism</span> (D'Ignazio and Klein) informed this process directly. Their argument that data reflects decisions, priorities, and omissions rather than neutral facts reshaped how I approached the index. The map is a constructed lens, one that illuminates certain relationships while inevitably casting others into shadow.</p>
                         <p>Understood this way, the index becomes a means of revealing where stability appears most contingent. In several areas of the city, food access depends not on proximity alone, but on the uninterrupted functioning of supply chains that most residents never encounter directly. Stability is borrowed, sustained by systems that remain outside individual control.</p>
                     </div>
                     <div>
@@ -118,10 +148,10 @@
                 <div class="closing-cols">
                     <div class="closing-col">
                         <p>These patterns of dependency become clearer when food systems are understood as infrastructure.</p>
-                        <p><em>All Data Are Local</em> reinforced that data and systems must be read in context, that the same supply chain produces different conditions depending on where one stands within it. Graham and Marvin's <em>Splintering Urbanism</em> extends this further, arguing that infrastructure does not simply distribute services evenly, but actively organizes uneven conditions of access and risk. Networks that appear seamless from the outside produce sharp distinctions on the inside.</p>
+                        <p><span class="book-ref" data-cover="images/readings/All Data Are Local.jpg">All Data Are Local</span> reinforced that data and systems must be read in context, that the same supply chain produces different conditions depending on where one stands within it. Graham and Marvin's <span class="book-ref" data-cover="images/readings/Splintering Urbanism.jpg">Splintering Urbanism</span> extends this further, arguing that infrastructure does not simply distribute services evenly, but actively organizes uneven conditions of access and risk. Networks that appear seamless from the outside produce sharp distinctions on the inside.</p>
                     </div>
                     <div class="closing-col">
-                        <p>Kate Crawford's <em>Atlas of AI</em> added another layer: that technological systems, often perceived as frictionless and automatic, depend on continuous material and labor processes that are systematically made invisible. This insight applies directly to food logistics. The cold storage facility, the delivery route, the overnight restocking of a shelf: these are not background functions but active conditions of everyday life. Food systems operate as infrastructures that produce both availability and exposure. They do not merely move goods — they distribute risk.</p>
+                        <p>Kate Crawford's <span class="book-ref" data-cover="images/readings/Atlas of AI.jpg">Atlas of AI</span> added another layer: that technological systems, often perceived as frictionless and automatic, depend on continuous material and labor processes that are systematically made invisible. This insight applies directly to food logistics. The cold storage facility, the delivery route, the overnight restocking of a shelf: these are not background functions but active conditions of everyday life. Food systems operate as infrastructures that produce both availability and exposure. They do not merely move goods — they distribute risk.</p>
                     </div>
                 </div>
             </div>
@@ -160,7 +190,7 @@
                         <p>Red Hook surfaces through this process, as a place where these overlapping conditions become simultaneously legible.</p>
                         <p>Low elevation, sustained coastal flood exposure, limited transit connections, and a dense concentration of logistics and warehouse infrastructure converge within a relatively contained geography. These are not independent characteristics. They are part of a longer history of land use decisions that positioned industrial functions at the waterfront and insulated other neighborhoods from both the infrastructure and the risk.</p>
                         <p>At the same time, Red Hook supports residential life and local food networks whose everyday functioning depends on the systems visible throughout the neighborhood. This proximity between global logistics and bodega shelves, between loading docks and kitchen tables — is what makes the site generative. It allows systems that are typically encountered only through their effects to be directly observed in their spatial and material form.</p>
-                        <p>Reading <em>Radical Futurisms</em> shifted how I understand Red Hook's relationship to environmental risk. Demos argues against treating climate events as sudden ruptures, locating them instead within slow, accumulating processes. In Red Hook, vulnerability is not an exception, but an ongoing condition that everyday life is organized around.</p>
+                        <p>Reading <span class="book-ref" data-cover="images/readings/Radical Futurisms.jpg">Radical Futurisms</span> shifted how I understand Red Hook's relationship to environmental risk. Demos argues against treating climate events as sudden ruptures, locating them instead within slow, accumulating processes. In Red Hook, vulnerability is not an exception, but an ongoing condition that everyday life is organized around.</p>
                     </div>
 
                     <div style="position:sticky; top:2rem;">
@@ -200,7 +230,7 @@
             <div style="position: relative; z-index: 2;">
                 <div class="wide-col fade-in">
                     <h2>Investigative Aesthetics</h2>
-                    <p>Deciding how to represent these systems required its own line of inquiry. Fuller and Weizman's concept of investigative aesthetics offered the most useful framework: the idea that representation can function as a form of inquiry. Systems are not presented as complete, resolved wholes — they are reconstructed through fragments, traces, and spatial encounters. The act of representation becomes a method, not a conclusion.</p>
+                    <p>Deciding how to represent these systems required its own line of inquiry. Fuller and Weizman's <span class="book-ref" data-cover="images/readings/Investigative Aesthetics.jpg">investigative aesthetics</span> offered the most useful framework: the idea that representation can function as a form of inquiry. Systems are not presented as complete, resolved wholes — they are reconstructed through fragments, traces, and spatial encounters. The act of representation becomes a method, not a conclusion.</p>
                     <p>This concept shaped every subsequent design decision in the project. The work proceeds through accumulation, gathering and organizing fragments until patterns become perceptible, while preserving the incompleteness that keeps interpretation open.</p>
                 </div>
             </div>
@@ -223,7 +253,7 @@
                     </div>
                     <div class="closing-col">
                         <p>Navigation follows a node-based structure, moving users between fixed viewpoints with limited freedom upon arrival. Movement is sequential and constrained, mirroring the predefined pathways of infrastructure itself, where circulation is conditioned by decisions made elsewhere.</p>
-                        <p>Throughout the environment, contextual panels open at each node, surfacing fragments of information: short narratives, observations, data points. These function less as explanations than as traces, requiring users to assemble meaning across movement. Informed by the visual investigative practices discussed in <em>Reading Visual Investigations: Between Advocacy, Journalism, and Law</em>, the use of photogrammetry and spatial reconstruction positions design as a method of inquiry rather than communication. The environment accumulates.</p>
+                        <p>Throughout the environment, contextual panels open at each node, surfacing fragments of information: short narratives, observations, data points. These function less as explanations than as traces, requiring users to assemble meaning across movement. Informed by the visual investigative practices discussed in <span class="book-ref" data-cover="images/readings/Reading Visual Investigations.jpg">Reading Visual Investigations: Between Advocacy, Journalism, and Law</span>, the use of photogrammetry and spatial reconstruction positions design as a method of inquiry rather than communication. The environment accumulates.</p>
                     </div>
                 </div>
 
@@ -260,7 +290,7 @@
             <div class="wide-col fade-in" style="position: relative; z-index: 1;">
                 <h2>Limited Agency and Presence</h2>
                 <p>Interaction within the environment is deliberately constrained.</p>
-                <p>Drawing from Flanagan's <em>Critical Play</em> and Bishop's <em>Artificial Hells</em>, the project resists the assumption that participation inherently produces agency. To be present within a system is not to control it. Users navigate, observe, and uncover, but they do not alter what they find. The conditions of the environment are fixed.</p>
+                <p>Drawing from Flanagan's <span class="book-ref" data-cover="images/readings/Critical Play.jpg">Critical Play</span> and Bishop's <em>Artificial Hells</em>, the project resists the assumption that participation inherently produces agency. To be present within a system is not to control it. Users navigate, observe, and uncover, but they do not alter what they find. The conditions of the environment are fixed.</p>
                 <p>This creates a specific tension between presence and power: users are positioned within the system, made to move through it and encounter its logic, but cannot reshape it. This is intentional. It is an invitation to notice, to recognize that the systems shaping food access in Red Hook — and across the city — are not fixed by nature. They are the result of decisions made across planning, logistics, and policy, and could be otherwise.</p>
             </div>
         </section>
