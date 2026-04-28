@@ -483,7 +483,7 @@ details.data-panel summary:hover { color: var(--text); }
 
 .gallery-progress-fill {
     height: 100%;
-    background: #c8752f;
+    background: var(--pink);
     width: 0%;
     transition: width 0.12s linear;
 }
@@ -804,9 +804,25 @@ details.data-panel summary:hover { color: var(--text); }
 footer {
     padding: 3rem 5%;
     border-top: 1px solid rgba(200, 205, 214, 0.07);
-    text-align: center;
     position: relative;
     z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+}
+
+.footer-left { text-align: left; }
+.footer-right { text-align: right; }
+
+.footer-title {
+    color: rgba(232, 228, 220, 0.5) !important;
+    margin-bottom: 0.4rem;
+}
+
+@media (max-width: 640px) {
+    footer { flex-direction: column; align-items: flex-start; }
+    .footer-right { text-align: left; }
 }
 
 footer p {

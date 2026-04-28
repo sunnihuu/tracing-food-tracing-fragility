@@ -12,7 +12,7 @@
         body { cursor: crosshair; }
         .book-ref {
             font-style: italic;
-            cursor: none;
+            cursor: crosshair;
             border-bottom: 1px solid rgba(232,228,220,0.15);
             transition: border-color 0.2s ease;
         }
@@ -216,9 +216,7 @@
         <!--==============================================================
         07. INVESTIGATIVE AESTHETICS
         ===============================================================-->
-        <section id=".photo-mosaic {
-    grid-auto-rows: 180px; /* or 20vh for responsive */
-}" style="position: relative; overflow: hidden; padding-top: 14rem; padding-bottom: 14rem; background: #080c14;">
+        <section id="investigative" style="position: relative; overflow: hidden; padding-top: 14rem; padding-bottom: 14rem; background: #080c14;">
             <!-- mosaic background -->
             <div class="photo-mosaic" style="position: absolute; inset: 0; z-index: 0; display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: calc(35vw - 3px); gap: 3px; width: 100%; background: #080c14; opacity: 0.80;">
                 <div class="mosaic-cell"><div class="cell-overlay" style="position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity 1s ease;"></div></div>
@@ -329,7 +327,7 @@
                         <p>Benjamin's work on race and technological systems reveals how infrastructure that appears neutral consistently reproduces existing inequalities. Crenshaw's framework of intersectionality insists that vulnerability cannot be understood through a single lens, it is produced through overlapping conditions of race, class, and geography. Together, these frameworks reframe what the mapping in this project is actually showing. The Food Vulnerability Index is a picture of where multiple systems of disadvantage converge.</p>
                     </div>
                     <div class="closing-col">
-                        <p>Food systems are not neutral arrangements of logistics and supply. They are shaped by policy, investment, labor conditions, and historical patterns of access, producing profoundly uneven conditions across the city. Who has access to fresh food, who lives near distribution infrastructure, whose neighborhood absorbs the environmental costs of supply chains: these are not technical questions. They are political ones.</p>
+                        <p>Food systems are not neutral arrangements of logistics and supply. They are shaped by policy, lment, labor conditions, and historical patterns of access, producing profoundly uneven conditions across the city. Who has access to fresh food, who lives near distribution infrastructure, whose neighborhood absorbs the environmental costs of supply chains: these are not technical questions. They are political ones.</p>
                         <p>This perspective shaped how the Unity environment was structured. The fixed nodes, the constrained navigation, the inability to alter what is encountered. They reflect the experience of moving through a system whose terms have already been set, by decisions made elsewhere, for interests that are rarely made visible.</p>
                     </div>
                 </div>
@@ -662,9 +660,14 @@
     CHAPTER INDEX
     ===============================================================-->
     <footer>
-        <p>Tracing Food, Tracing Fragility</p>
-        <p>Sunni Hu &nbsp;·&nbsp; Columbia University GSAPP &nbsp;·&nbsp; Computational Design Practices &nbsp;·&nbsp; Spring 2026</p>
-        <p style="margin-top: 0.8rem;">Design in Action — Thesis Project Documentation &amp; Reflection</p>
+        <div class="footer-left">
+            <p class="footer-title">Tracing Food, Tracing Fragility</p>
+            <p>Design in Action — Thesis Project Documentation &amp; Reflection</p>
+        </div>
+        <div class="footer-right">
+            <p>Computational Design Practices &nbsp;·&nbsp; Spring 2026</p>
+            <p style="margin-top: 0.8rem;">&copy; 2026 Sunni Hu</p>
+        </div>
     </footer>
 
     <script>

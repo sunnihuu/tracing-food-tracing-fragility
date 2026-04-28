@@ -44,7 +44,7 @@
             align-items: center;
             gap: 9px;
             padding: 8px 14px;
-            cursor: pointer;
+            cursor: crosshair;
             user-select: none;
             border-left: 2px solid transparent;
             transition: border-color 0.2s, background 0.2s;
@@ -314,9 +314,6 @@ map.on('load', async () => {
         Object.entries(FILES).map(async ([key, path]) => {
             const res  = await fetch(path);
             const data = await res.json();
-            if (key === 'supply-gap' && data.features?.length) {
-                console.log('[supply-gap] first feature properties:', data.features[0].properties);
-            }
             map.addSource(key, { type: 'geojson', data });
         })
     );
