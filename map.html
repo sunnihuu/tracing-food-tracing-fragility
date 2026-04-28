@@ -134,10 +134,25 @@
         <div class="toggle-dot" style="background:#48b06e"></div>
         <span class="toggle-label">Truck Routes</span>
     </div>
+    <div id="trucks-legend" style="display:none; padding: 4px 14px 6px 16px; gap: 5px; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:7px;">
+            <div style="width:18px; height:2px; background:#48b06e; flex-shrink:0;"></div>
+            <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Through</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:7px;">
+            <div style="width:18px; height:2px; background:#e8c84a; flex-shrink:0;"></div>
+            <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Local</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:7px;">
+            <div style="width:18px; height:2px; background:#e8832a; flex-shrink:0;"></div>
+            <span style="font-size:0.5rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(232,228,220,0.45);">Limited Local</span>
+        </div>
+    </div>
     <div class="toggle-row" data-layer="flood" data-color="#2a4a8a">
         <div class="toggle-dot" style="background:#2a4a8a"></div>
         <span class="toggle-label">Flood Risk</span>
     </div>
+    <div style="padding: 0 14px; margin-top: 10px; font-size: 0.5rem; color: rgba(232,228,220,0.2); font-family: 'IBM Plex Mono', monospace;">// select a layer to explore</div>
 </div>
 
 <!-- Hover tooltip -->
@@ -149,9 +164,9 @@
 <script>
 mapboxgl.accessToken = 'pk.eyJ1Ijoic3VubmlodSIsImEiOiJjbWxwZmh6NDAxY200M2dvb2VlMzZ2aTM4In0.Xq6Z1l7EMA4II91mAAhyTw';
 
-// ── Layer state — all off by default ──────────────────────────────
+// ── Layer state ───────────────────────────────────────────────────
 const state = {
-    'supply-gap': false,
+    'supply-gap': true,
     'heat':       false,
     'food-sites': false,
     'fresh':      false,
@@ -188,7 +203,7 @@ const HOVER = {
     }),
     'trucks-line':       p => ({
         title: p.street || 'Truck Route',
-        body:  [p.routetype, p.boroname].filter(Boolean).join(' — '),
+        body:  [p.routetype, p.boroname].filter(Boolean).join('\n'),
     }),
     'flood-fill':        p => ({
         title: 'Flood Risk',
@@ -289,13 +304,19 @@ map.on('load', async () => {
         layout: { visibility: 'none' },
     });
 
-    // Truck Routes — line
+    // Truck Routes — line, colored by routetype
     map.addLayer({
         id:     'trucks-line',
         type:   'line',
         source: 'trucks',
         paint:  {
-            'line-color':   '#48b06e',
+            'line-color': [
+                'match', ['get', 'routetype'],
+                'Through',       '#48b06e',
+                'Local',         '#e8c84a',
+                'Limited Local', '#e8832a',
+                '#888'
+            ],
             'line-width':   1.5,
             'line-opacity': 0.75,
         },
@@ -345,6 +366,10 @@ map.on('load', async () => {
             map.getCanvas().style.cursor = '';
         });
     });
+
+    // apply default on state
+    setLayer('supply-gap', true);
+    syncTogglePanel();
 });
 
 // ── Layer helpers ──────────────────────────────────────────────────
@@ -364,6 +389,8 @@ function syncTogglePanel() {
         row.classList.toggle('active', on);
         row.style.borderLeftColor = on ? color : 'transparent';
     });
+    const trucksLegend = document.getElementById('trucks-legend');
+    if (trucksLegend) trucksLegend.style.display = state['trucks'] ? 'flex' : 'none';
 }
 
 // ── Toggle panel clicks ────────────────────────────────────────────
