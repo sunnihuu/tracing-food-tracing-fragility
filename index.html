@@ -123,18 +123,38 @@
         ===============================================================-->
         <section id="vulnerability">
             <div class="wide-col fade-in">
-                <div class="two-col" style="align-items: start;">
-                    <div>
-                        <h2>Spatializing Vulnerability</h2>
-                        <p>This line of inquiry extends into the city. I developed a Food Vulnerability Index to examine how food stability varies across neighborhoods in New York City, drawing together three dimensions: economic pressure, consumption intensity, and household storage capacity. The aim was to surface patterns of dependency that might otherwise remain invisible.</p>
-                        <p>Reading <span class="book-ref" data-cover="images/readings/Data Feminism.jpg">Data Feminism</span> (D'Ignazio and Klein) informed this process directly. Their argument that data reflects decisions, priorities, and omissions rather than neutral facts reshaped how I approached the index. The map is a constructed lens, one that illuminates certain relationships while inevitably casting others into shadow.</p>
-                        <p>Understood this way, the index becomes a means of revealing where stability appears most contingent. In several areas of the city, food access depends not on proximity alone, but on the uninterrupted functioning of supply chains that most residents never encounter directly. Stability is borrowed, sustained by systems that remain outside individual control.</p>
-                    </div>
-                    <div>
-                        <div class="slot slot-large">
-                            <span class="slot-label">// Food Vulnerability Index map — NYC</span>
-                        </div>
-                    </div>
+                <div style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 3rem;
+                  align-items: start;
+                  margin-top: 2rem;
+                ">
+                  <div>
+                    <h2>Spatializing Vulnerability</h2>
+                    <p>This line of inquiry extends into the city. I developed a Food Vulnerability Index to examine how food stability varies across neighborhoods in New York City, drawing together three dimensions: economic pressure, consumption intensity, and household storage capacity. The aim was to surface patterns of dependency that might otherwise remain invisible.</p>
+                    <p>Reading <span class="book-ref" data-cover="images/readings/Data Feminism.jpg">Data Feminism</span> (D'Ignazio and Klein) informed this process directly. Their argument that data reflects decisions, priorities, and omissions rather than neutral facts reshaped how I approached the index. The map is a constructed lens, one that illuminates certain relationships while inevitably casting others into shadow.</p>
+                    <p>Understood this way, the index becomes a means of revealing where stability appears most contingent. In several areas of the city, food access depends not on proximity alone, but on the uninterrupted functioning of supply chains that most residents never encounter directly. Stability is borrowed, sustained by systems that remain outside individual control.</p>
+                  </div>
+
+                  <div style="position: sticky; top: 2rem;">
+                    <iframe
+                      src="vulnerability-map.html"
+                      style="
+                        width: 100%;
+                        aspect-ratio: 1 / 1;
+                        border: none;
+                        display: block;
+                      ">
+                    </iframe>
+                    <p style="
+                      font-family: 'IBM Plex Mono', monospace;
+                      font-size: 0.62rem;
+                      letter-spacing: 0.1em;
+                      color: rgba(232,228,220,0.3);
+                      margin-top: 0.8rem;
+                    ">// NYC census tracts — food vulnerability index / poverty / storage / food access scarcity</p>
+                  </div>
                 </div>
             </div>
         </section>
