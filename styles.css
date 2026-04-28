@@ -881,6 +881,53 @@ footer p {
 /* ================================================================
    LIBRARY GRID
 ================================================================ */
+/* ── Data Sources ───────────────────────────────────────────────── */
+.ds-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem 3rem;
+    margin-top: 2.5rem;
+}
+
+.ds-label {
+    font-family: var(--mono);
+    font-size: 0.46rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid rgba(232,228,220,0.06);
+}
+
+.ds-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.ds-list li {
+    font-family: var(--mono);
+    font-size: 0.5rem;
+    line-height: 1.6;
+    color: rgba(232,228,220,0.35);
+}
+
+.ds-org {
+    color: rgba(232,228,220,0.6);
+}
+
+@media (max-width: 900px) {
+    .ds-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+    .ds-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Library ──────────────────────────────────────────────────── */
 .lib-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
