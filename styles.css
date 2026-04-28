@@ -39,21 +39,6 @@ body {
     overflow-x: hidden;
 }
 
-/* Vertical rain-line texture */
-body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background-image: repeating-linear-gradient(
-        90deg,
-        transparent 0px,
-        transparent 72px,
-        rgba(200, 205, 214, 0.016) 72px,
-        rgba(200, 205, 214, 0.016) 73px
-    );
-}
 
 /* ================================================================
    TYPOGRAPHY
@@ -193,6 +178,7 @@ section h2 {
     z-index: 3;
     text-align: center;
     padding: 0 5%;
+    margin-top: -10px;
 }
 
 .opening-eyebrow {
