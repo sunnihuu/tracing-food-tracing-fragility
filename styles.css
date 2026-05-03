@@ -27,7 +27,12 @@
     padding: 0;
 }
 
-html { scroll-behavior: smooth; }
+html {
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+}
+
+html::-webkit-scrollbar { display: none; }
 
 body {
     font-family: var(--serif);
@@ -37,7 +42,10 @@ body {
     color: var(--text);
     background-color: var(--night);
     overflow-x: hidden;
+    scrollbar-width: none;
 }
+
+body::-webkit-scrollbar { display: none; }
 
 
 /* ================================================================
@@ -117,7 +125,7 @@ section h2 {
 .progress-track {
     position: fixed;
     top: 0;
-    left: 0;
+    right: 0;
     width: 2px;
     height: 100vh;
     background: rgba(200, 205, 214, 0.08);
@@ -833,6 +841,39 @@ footer p {
     max-width: none;
     margin-bottom: 0.4rem;
 }
+
+/* ================================================================
+   ACKNOWLEDGEMENTS
+================================================================ */
+#acknowledgements {
+    padding: 3rem 5%;
+    border-top: 1px solid rgba(200, 205, 214, 0.07);
+    position: relative;
+    z-index: 2;
+}
+
+.ack-label {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: rgba(232, 228, 220, 0.25);
+    margin-bottom: 1.4rem;
+}
+
+.ack-body {
+    max-width: 860px;
+}
+
+.ack-body p {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.05em;
+    line-height: 2.1;
+    color: rgba(232, 228, 220, 0.25);
+    margin-bottom: 0.9rem;
+}
+
+.ack-body p:last-child { margin-bottom: 0; }
 
 /* ================================================================
    FADE-IN ANIMATIONS

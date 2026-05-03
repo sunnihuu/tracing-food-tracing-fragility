@@ -9,10 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Esteban&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <style>
-        body { cursor: crosshair; }
+        body { cursor: none; }
         .book-ref {
             font-style: italic;
-            cursor: crosshair;
+            cursor: none;
             border-bottom: 1px solid rgba(232,228,220,0.15);
             transition: border-color 0.2s ease;
         }
@@ -30,6 +30,8 @@
     </script>
 </head>
 <body>
+
+<div id="custom-cursor"></div>
 
 <div id="book-cursor" style="
   position: fixed;
@@ -653,6 +655,17 @@
                 </div>
             </div>
         </section>
+
+        <div id="acknowledgements" class="fade-in">
+            <p class="ack-label">Acknowledgements</p>
+            <div class="ack-body">
+                <p>This project would not have been possible without the support and guidance of many individuals.</p>
+                <p>I would like to thank my advisor, Seth Thompson, for his guidance throughout this work.</p>
+                <p>Special thanks to my colloquium mentors — Catherine Griffiths, Ziv Schneider, Christopher Woebken, Dan Miller, and Celeste Layne — for their feedback, ideas, and thoughtful perspectives.</p>
+                <p>I am especially grateful to Mario A. Giampieri and Dare Anne S. Brawley, whose course <em>GIS for Design Practices</em> introduced a new dimension to my design practice and sparked my interest in mapping and spatial data.</p>
+                <p>Finally, I would like to thank Adam Vosburgh and Laura Kurgan for making this program possible.</p>
+            </div>
+        </div>
 
     </main>
 
