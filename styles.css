@@ -843,6 +843,29 @@ footer p {
 }
 
 /* ================================================================
+   CUSTOM CURSOR
+================================================================ */
+html, html * { cursor: none !important; }
+
+#custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    background: var(--pink);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 999999;
+    will-change: transform;
+    transition: scale 0.18s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+#custom-cursor.is-visible  { opacity: 1; }
+#custom-cursor.is-hovering { scale: 2.75; }
+
+/* ================================================================
    ACKNOWLEDGEMENTS
 ================================================================ */
 #acknowledgements {
@@ -862,6 +885,8 @@ footer p {
 
 .ack-body {
     max-width: 860px;
+    columns: 2;
+    column-gap: 3rem;
 }
 
 .ack-body p {
@@ -869,8 +894,13 @@ footer p {
     font-size: 0.62rem;
     letter-spacing: 0.05em;
     line-height: 2.1;
-    color: rgba(232, 228, 220, 0.25);
+    color: rgba(232, 228, 220, 0.85);
     margin-bottom: 0.9rem;
+    break-inside: avoid;
+}
+
+@media (max-width: 640px) {
+    .ack-body { columns: 1; }
 }
 
 .ack-body p:last-child { margin-bottom: 0; }
