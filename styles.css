@@ -843,27 +843,9 @@ footer p {
 }
 
 /* ================================================================
-   CUSTOM CURSOR
+    CUSTOM CURSOR (removed)
 ================================================================ */
-html, html * { cursor: none !important; }
-
-#custom-cursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 8px;
-    height: 8px;
-    background: var(--pink);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 999999;
-    will-change: transform;
-    transition: scale 0.18s ease, opacity 0.3s ease;
-    opacity: 0;
-}
-
-#custom-cursor.is-visible  { opacity: 1; }
-#custom-cursor.is-hovering { scale: 2.75; }
+/* Custom cursor removed to restore default system cursor. */
 
 /* ================================================================
    ACKNOWLEDGEMENTS

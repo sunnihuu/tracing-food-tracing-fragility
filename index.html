@@ -9,10 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Esteban&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <style>
-        body { cursor: none; }
+        /* Default system cursor restored. */
         .book-ref {
             font-style: italic;
-            cursor: none;
             border-bottom: 1px solid rgba(232,228,220,0.15);
             transition: border-color 0.2s ease;
         }
@@ -30,8 +29,6 @@
     </script>
 </head>
 <body>
-
-<div id="custom-cursor"></div>
 
 <div id="book-cursor" style="
   position: fixed;
@@ -849,37 +846,7 @@
       }, 900);
     })();
 
-    // ── Custom cursor ─────────────────────────────────────────────
-    (function () {
-        const dot = document.getElementById('custom-cursor');
-        const HALF = 4; // half of 8px dot
-        let mouseX = 0, mouseY = 0;
-        let curX = 0, curY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            dot.classList.add('is-visible');
-        });
-
-        document.addEventListener('mouseleave', () => dot.classList.remove('is-visible'));
-        document.addEventListener('mouseenter', () => dot.classList.add('is-visible'));
-
-        function lerp(a, b, t) { return a + (b - a) * t; }
-
-        (function tick() {
-            curX = lerp(curX, mouseX, 0.18);
-            curY = lerp(curY, mouseY, 0.18);
-            dot.style.transform = `translate(${curX - HALF}px, ${curY - HALF}px)`;
-            requestAnimationFrame(tick);
-        })();
-
-        const hoverTargets = 'a, button, [role="button"], label, .book-ref, .nav-dot, .chapter-dot';
-        document.querySelectorAll(hoverTargets).forEach(el => {
-            el.addEventListener('mouseenter', () => dot.classList.add('is-hovering'));
-            el.addEventListener('mouseleave', () => dot.classList.remove('is-hovering'));
-        });
-    })();
+    // Custom cursor removed. System cursor will be used.
 
     const bookCursor    = document.getElementById('book-cursor');
     const bookCursorImg = document.getElementById('book-cursor-img');
